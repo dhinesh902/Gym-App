@@ -130,7 +130,19 @@ class WorkoutScreen extends StatelessWidget {
                                   child: _WorkoutStat(
                                     icon: Icons.repeat_rounded,
                                     value: '6',
-                                    label: 'Exercises',
+                                    label: 'Workouts Completed',
+                                  ),
+                                ),
+                                Container(
+                                  height: 40,
+                                  width: 1,
+                                  color: Colors.white.withValues(alpha: 0.1),
+                                ),
+                                const Expanded(
+                                  child: _WorkoutStat(
+                                    icon: Icons.pending_actions,
+                                    value: '1',
+                                    label: 'Workouts Pending',
                                   ),
                                 ),
                                 Container(
@@ -143,18 +155,6 @@ class WorkoutScreen extends StatelessWidget {
                                     icon: Icons.timer_outlined,
                                     value: '45m',
                                     label: 'Duration',
-                                  ),
-                                ),
-                                Container(
-                                  height: 40,
-                                  width: 1,
-                                  color: Colors.white.withValues(alpha: 0.1),
-                                ),
-                                const Expanded(
-                                  child: _WorkoutStat(
-                                    icon: Icons.local_fire_department_rounded,
-                                    value: '350',
-                                    label: 'Calories',
                                   ),
                                 ),
                               ],
@@ -234,6 +234,7 @@ class _WorkoutStat extends StatelessWidget {
         const SizedBox(height: 4),
         Text(
           label,
+          textAlign: TextAlign.center,
           style: TextStyle(
             color: Colors.white.withValues(alpha: 0.6),
             fontSize: 12,

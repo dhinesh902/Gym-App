@@ -19,19 +19,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     {
       'title': 'Track Your Progress',
       'description':
-          'Monitor your daily workouts, nutrition, and personal records easily with our intuitive dashboard.',
+      'Monitor your daily workouts, nutrition, and personal records easily with our intuitive dashboard.',
       'icon': 'fitness_center',
     },
     {
       'title': 'Expert Guidance',
       'description':
-          'Access premium workout plans and connect with certified trainers to achieve your fitness goals faster.',
+      'Access premium workout plans and connect with certified trainers to achieve your fitness goals faster.',
       'icon': 'trending_up',
     },
     {
       'title': 'Join the Community',
       'description':
-          'Compete with friends, share your milestones, and stay motivated together on your fitness journey.',
+      'Compete with friends, share your milestones, and stay motivated together on your fitness journey.',
       'icon': 'groups',
     },
   ];
@@ -63,25 +63,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SafeArea(
             child: Column(
               children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 16.0, top: 8.0),
-                    child: TextButton(
-                      onPressed: () => context.go(AppRoutes.login),
-                      style: TextButton.styleFrom(
-                        foregroundColor: AppColors.textLight,
-                      ),
-                      child: const Text(
-                        'Skip',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
@@ -127,24 +108,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             // Title
                             Text(
                               _onboardingData[index]['title']!,
-                              style: Theme.of(context).textTheme.headlineMedium
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .headlineMedium
                                   ?.copyWith(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.bold,
-                                    letterSpacing: -0.5,
-                                  ),
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: -0.5,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                             const SizedBox(height: 20),
                             // Description
                             Text(
                               _onboardingData[index]['description']!,
-                              style: Theme.of(context).textTheme.bodyLarge
+                              style: Theme
+                                  .of(context)
+                                  .textTheme
+                                  .bodyLarge
                                   ?.copyWith(
-                                    color: AppColors.textLight,
-                                    height: 1.6,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                color: AppColors.textLight,
+                                height: 1.6,
+                                fontWeight: FontWeight.w500,
+                              ),
                               textAlign: TextAlign.center,
                             ),
                           ],
@@ -166,18 +153,20 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       Row(
                         children: List.generate(
                           _onboardingData.length,
-                          (index) => AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            margin: const EdgeInsets.only(right: 8),
-                            height: 10,
-                            width: _currentPage == index ? 32 : 10,
-                            decoration: BoxDecoration(
-                              color: _currentPage == index
-                                  ? AppColors.primary
-                                  : AppColors.primary.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
+                              (index) =>
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                margin: const EdgeInsets.only(right: 8),
+                                height: 10,
+                                width: _currentPage == index ? 32 : 10,
+                                decoration: BoxDecoration(
+                                  color: _currentPage == index
+                                      ? AppColors.primary
+                                      : AppColors.primary.withValues(
+                                      alpha: 0.2),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
                         ),
                       ),
                       // Next / Get Started Button
@@ -216,18 +205,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           alignment: Alignment.center,
                           child: _currentPage == _onboardingData.length - 1
                               ? const Text(
-                                  'Get Started',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                )
+                            'Get Started',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
                               : const Icon(
-                                  Icons.arrow_forward_rounded,
-                                  color: Colors.white,
-                                  size: 32,
-                                ),
+                            Icons.arrow_forward_rounded,
+                            color: Colors.white,
+                            size: 32,
+                          ),
                         ),
                       ),
                     ],

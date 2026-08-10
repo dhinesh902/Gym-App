@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
+import 'package:gym/views/widgets/elegant_gradient_background.dart';
 
 class ContactUsScreen extends StatelessWidget {
   const ContactUsScreen({super.key});
@@ -17,33 +18,35 @@ class ContactUsScreen extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppConstants.screenPadding),
-        children: const [
-          ContactCard(
-            icon: Icons.location_on_rounded,
-            title: 'Our Location',
-            subtitle: '123 Fitness Street, NY 10001',
-            color: AppColors.lightBlue,
-            bgColor: AppColors.lightBlueBg,
-          ),
-          SizedBox(height: 16),
-          ContactCard(
-            icon: Icons.phone_rounded,
-            title: 'Phone Number',
-            subtitle: '+1 234 567 8900',
-            color: AppColors.lightGreen,
-            bgColor: AppColors.lightGreenBg,
-          ),
-          SizedBox(height: 16),
-          ContactCard(
-            icon: Icons.email_rounded,
-            title: 'Email Address',
-            subtitle: 'support@gympro.com',
-            color: AppColors.primary,
-            bgColor: Color(0xFFFEE2E2), // Using a safe tint for primary
-          ),
-        ],
+      body: ElegantGradientBackground(
+        child: ListView(
+          padding: const EdgeInsets.all(AppConstants.screenPadding),
+          children: const [
+            ContactCard(
+              icon: Icons.location_on_rounded,
+              title: 'Our Location',
+              subtitle: '123 Fitness Street, NY 10001',
+              color: AppColors.lightBlue,
+              bgColor: AppColors.lightBlueBg,
+            ),
+            SizedBox(height: 16),
+            ContactCard(
+              icon: Icons.phone_rounded,
+              title: 'Phone Number',
+              subtitle: '+1 234 567 8900',
+              color: AppColors.lightGreen,
+              bgColor: AppColors.lightGreenBg,
+            ),
+            SizedBox(height: 16),
+            ContactCard(
+              icon: Icons.email_rounded,
+              title: 'Email Address',
+              subtitle: 'support@gympro.com',
+              color: AppColors.primary,
+              bgColor: Color(0xFFFEE2E2), // Using a safe tint for primary
+            ),
+          ],
+        ),
       ),
     );
   }

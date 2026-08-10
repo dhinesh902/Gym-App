@@ -3,24 +3,25 @@ import 'package:flutter/material.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/views/auth/splash_screen.dart';
 import 'package:gym/views/auth/login_screen.dart';
+import 'package:gym/views/auth/register_screen.dart';
 import 'package:gym/views/auth/onboarding_screen.dart';
-import 'package:gym/views/home/home_screen.dart';
-import 'package:gym/views/workout/workout_screen.dart';
-import 'package:gym/views/workout/workout_details_screen.dart';
-import 'package:gym/views/diet/diet_screen.dart';
+import 'package:gym/views/user/workout/home/home_screen.dart';
+import 'package:gym/views/user/workout/workout_screen.dart';
+import 'package:gym/views/user/workout/workout_details_screen.dart';
+import 'package:gym/views/user/workout/diet/diet_screen.dart';
 import 'package:gym/views/attendance/attendance_screen.dart';
 import 'package:gym/views/membership/membership_screen.dart';
-import 'package:gym/views/payments/payments_screen.dart';
-import 'package:gym/views/progress/progress_screen.dart';
+import 'package:gym/views/user/workout/payments/payments_screen.dart';
+import 'package:gym/views/user/workout/progress/progress_screen.dart';
 import 'package:gym/views/notifications/notifications_screen.dart';
-import 'package:gym/views/profile/profile_screen.dart';
-import 'package:gym/views/profile/edit_profile_screen.dart';
+import 'package:gym/views/user/workout/profile/profile_screen.dart';
+import 'package:gym/views/user/workout/profile/edit_profile_screen.dart';
 import 'package:gym/views/settings/shop_screen.dart';
 import 'package:gym/views/settings/about_gym_screen.dart';
 import 'package:gym/views/settings/contact_us_screen.dart';
 import 'package:gym/views/settings/privacy_policy_screen.dart';
 import 'package:gym/views/settings/terms_conditions_screen.dart';
-import 'package:gym/views/main/main_screen.dart';
+import 'package:gym/views/user/workout/main/main_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey =
@@ -49,6 +50,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.login,
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.register,
+      builder: (context, state) => const RegisterScreen(),
     ),
 
     // Shell Route for Bottom Navigation Bar
