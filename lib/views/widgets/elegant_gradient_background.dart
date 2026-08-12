@@ -73,3 +73,17 @@ class ElegantGradientBackground extends StatelessWidget {
     );
   }
 }
+
+
+class CustomDivider extends StatelessWidget {
+  const CustomDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 24,
+      thickness: 1,
+      color: AppColors.border.withValues(alpha: 0.3),
+    );
+  }
+}

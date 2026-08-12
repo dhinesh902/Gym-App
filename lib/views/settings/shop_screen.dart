@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_network_image.dart';
+import 'package:gym/views/widgets/custom_elevated_button.dart';
 
 class ShopScreen extends StatelessWidget {
   const ShopScreen({super.key});
@@ -151,16 +152,8 @@ class ShopScreen extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             height: 55,
-                            child: ElevatedButton(
+                            child: CustomElevatedButton(
                               onPressed: () => Navigator.pop(context),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: AppColors.surface,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
                               child: const Text(
                                 'Close Details',
                                 style: TextStyle(

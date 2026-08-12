@@ -61,7 +61,7 @@ class CustomSliverAppBar extends StatelessWidget {
         ),
       ),
       leadingWidth: 75,
-      leading: Navigator.canPop(context) 
+      leading: Navigator.canPop(context)
         ? Center(
             child: Container(
               margin: const EdgeInsets.only(left: 20),
@@ -89,7 +89,7 @@ class CustomSliverAppBar extends StatelessWidget {
                 ),
               ),
             ),
-          ) 
+          )
         : null,
       actions: actions,
     );
@@ -103,7 +103,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key, this.title = "Shop", this.actions});
 
   @override
-  Size get preferredSize => const Size.fromHeight(75);
+  Size get preferredSize => const Size.fromHeight(65);
 
   @override
   Widget build(BuildContext context) {
@@ -111,77 +111,58 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       elevation: 0,
       centerTitle: true,
-      toolbarHeight: 75,
-      backgroundColor: Colors.transparent,
+      toolbarHeight: 65,
+      backgroundColor: AppColors.surface,
       flexibleSpace: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
           child: Container(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  AppColors.primary.withValues(alpha: 0.85),
-                  AppColors.secondary.withValues(alpha: 0.75),
-                  AppColors.accent.withValues(alpha: 0.65),
-                ],
-              ),
+              color: AppColors.surface.withValues(alpha: 0.85),
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 1.5,
+                  color: AppColors.border.withValues(alpha: 0.4),
+                  width: 1.0,
                 ),
               ),
             ),
           ),
         ),
       ),
-      leadingWidth: 75,
-      leading: Navigator.canPop(context) 
+      leadingWidth: 70,
+      leading: Navigator.canPop(context)
         ? Center(
             child: Container(
               margin: const EdgeInsets.only(left: 20),
-              width: 46,
-              height: 46,
+              width: 40,
+              height: 40,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.25),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 12,
-                    offset: const Offset(0, 5),
-                  ),
-                ],
-                border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
+                color: Colors.transparent,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.8),
+                  width: 1.5,
+                ),
               ),
               child: IconButton(
                 padding: EdgeInsets.zero,
                 onPressed: () => Navigator.pop(context),
                 icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
+                  Icons.arrow_back_rounded,
+                  color: AppColors.textPrimary,
                   size: 20,
                 ),
               ),
             ),
-          ) 
+          )
         : null,
       title: Text(
         title,
         style: const TextStyle(
-          color: Colors.white,
-          fontSize: 22,
-          fontWeight: FontWeight.w900,
-          letterSpacing: -0.5,
-          shadows: [
-            Shadow(
-              color: Colors.black26,
-              blurRadius: 8,
-              offset: Offset(0, 2),
-            ),
-          ],
+          color: AppColors.textPrimary,
+          fontSize: 18,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 0.5,
         ),
       ),
       actions: actions,

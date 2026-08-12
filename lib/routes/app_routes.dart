@@ -1,6 +1,7 @@
 class AppRoutes {
   static const splash = '/';
   static const onboarding = '/onboarding';
+  static const authSelection = '/auth-selection';
   static const login = '/login';
   static const register = '/register';
   static const home = '/home';
@@ -20,4 +21,13 @@ class AppRoutes {
   static const contactUs = '/contact-us';
   static const privacyPolicy = '/privacy-policy';
   static const terms = '/terms';
+  static const trainerHome = '/trainer-home';
+  static const trainerEditProfile = '/trainer-edit-profile';
+  static const trainerChangePassword = '/trainer-change-password';
+  static const trainerNotificationSettings = '/trainer-notification-settings';
+  static const trainerPrivacySettings = '/trainer-privacy-settings';
+  static const trainerCustomerDetails = '/trainer-customer-details';
+  static const trainerDiet = '/trainer-diet';
+  static const trainerAddFood = '/trainer-add-food';
+  static const trainerAssignDiet = '/trainer-assign-diet';
 }

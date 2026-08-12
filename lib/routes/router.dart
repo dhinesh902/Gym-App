@@ -2,9 +2,11 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/views/auth/splash_screen.dart';
+import 'package:gym/views/auth/auth_selection_screen.dart';
 import 'package:gym/views/auth/login_screen.dart';
 import 'package:gym/views/auth/register_screen.dart';
 import 'package:gym/views/auth/onboarding_screen.dart';
+import 'package:gym/views/settings/terms_conditions_screen.dart';
 import 'package:gym/views/user/workout/home/home_screen.dart';
 import 'package:gym/views/user/workout/workout_screen.dart';
 import 'package:gym/views/user/workout/workout_details_screen.dart';
@@ -20,8 +22,16 @@ import 'package:gym/views/settings/shop_screen.dart';
 import 'package:gym/views/settings/about_gym_screen.dart';
 import 'package:gym/views/settings/contact_us_screen.dart';
 import 'package:gym/views/settings/privacy_policy_screen.dart';
-import 'package:gym/views/settings/terms_conditions_screen.dart';
 import 'package:gym/views/user/workout/main/main_screen.dart';
+import 'package:gym/views/trainer/main/trainer_main_screen.dart';
+import 'package:gym/views/trainer/profile/trainer_edit_profile_screen.dart';
+import 'package:gym/views/trainer/profile/trainer_change_password_screen.dart';
+import 'package:gym/views/trainer/profile/trainer_notification_settings_screen.dart';
+import 'package:gym/views/trainer/profile/trainer_privacy_settings_screen.dart';
+import 'package:gym/views/trainer/customers/customer_details_screen.dart';
+import 'package:gym/views/trainer/diet/diet_management_screen.dart';
+import 'package:gym/views/trainer/diet/add_food_screen.dart';
+import 'package:gym/views/trainer/diet/assign_diet_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey =
@@ -48,12 +58,52 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
+      path: AppRoutes.authSelection,
+      builder: (context, state) => const AuthSelectionScreen(),
+    ),
+    GoRoute(
       path: AppRoutes.login,
       builder: (context, state) => const LoginScreen(),
     ),
     GoRoute(
       path: AppRoutes.register,
       builder: (context, state) => const RegisterScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerHome,
+      builder: (context, state) => const TrainerMainScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerEditProfile,
+      builder: (context, state) => const TrainerEditProfileScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerChangePassword,
+      builder: (context, state) => const TrainerChangePasswordScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerNotificationSettings,
+      builder: (context, state) => const TrainerNotificationSettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerPrivacySettings,
+      builder: (context, state) => const TrainerPrivacySettingsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerCustomerDetails,
+      builder: (context, state) => const CustomerDetailsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerDiet,
+      builder: (context, state) => const DietManagementScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerAddFood,
+      builder: (context, state) => const AddFoodScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerAssignDiet,
+      builder: (context, state) => const AssignDietScreen(),
     ),
 
     // Shell Route for Bottom Navigation Bar

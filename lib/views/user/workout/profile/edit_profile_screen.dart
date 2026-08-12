@@ -3,6 +3,7 @@ import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/elegant_gradient_background.dart';
+import 'package:gym/views/widgets/custom_elevated_button.dart';
 
 class EditProfileScreen extends StatelessWidget {
   const EditProfileScreen({super.key});
@@ -125,17 +126,7 @@ class EditProfileScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 30),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.surface,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(
-                      AppConstants.buttonRadius,
-                    ),
-                  ),
-                  elevation: 0,
-                ),
+              CustomElevatedButton(
                 onPressed: () {},
                 child: const Text(
                   'Save Changes',
@@ -149,6 +140,7 @@ class EditProfileScreen extends StatelessWidget {
       ),
     );
   }
+
   void _showImagePickerBottomSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,

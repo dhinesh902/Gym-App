@@ -63,6 +63,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           SafeArea(
             child: Column(
               children: [
+                // Skip Button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                  child: Align(
+                    alignment: Alignment.topRight,
+                    child: TextButton(
+                      onPressed: () => context.go(AppRoutes.authSelection),
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.textLight,
+                      ),
+                      child: const Text(
+                        'Skip',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
@@ -80,27 +100,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           children: [
                             // Image / Icon Container
                             Container(
-                              height: 320,
+                              height: 380,
                               width: double.infinity,
-                              padding: const EdgeInsets.all(24),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 color: AppColors.surface,
                                 borderRadius: BorderRadius.circular(40),
                                 boxShadow: [
                                   BoxShadow(
-                                    color: Colors.black.withValues(alpha: 0.05),
-                                    blurRadius: 40,
-                                    offset: const Offset(0, 20),
+                                    color: AppColors.primary.withValues(alpha: 0.2),
+                                    blurRadius: 20,
                                   ),
                                 ],
                               ),
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius: BorderRadius.circular(32),
                                 child: CustomNetworkImage(
-                                  imageUrl: _getIconData(
+                                  imageUrl: _getImageData(
                                     _onboardingData[index]['icon']!,
                                   ),
-                                  fit: BoxFit.contain,
+                                  fit: BoxFit.cover,
                                 ),
                               ),
                             ),
@@ -173,7 +192,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       GestureDetector(
                         onTap: () {
                           if (_currentPage == _onboardingData.length - 1) {
-                            context.go(AppRoutes.login);
+                            context.go(AppRoutes.authSelection);
                           } else {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 500),
@@ -230,16 +249,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
-  String _getIconData(String iconName) {
+  String _getImageData(String iconName) {
     switch (iconName) {
       case 'fitness_center':
-        return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxEYo0LLR-zp7dcTqOLjWLzhG_oQpA5nwtjtrs-i-ESA&s=10";
+        return "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop";
       case 'trending_up':
-        return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQWIi6Op3-VjoML1sZBM2RV1MI1d1trJ_EyaaManmZUtg&s=10";
+        return "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1470&auto=format&fit=crop";
       case 'groups':
-        return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSx7oh6Z4IfBTMYBpG_4YqplM39_kc51FaYkk08lOuoYg&s=10";
+        return "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop";
       default:
-        return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxEYo0LLR-zp7dcTqOLjWLzhG_oQpA5nwtjtrs-i-ESA&s=10";
+        return "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1470&auto=format&fit=crop";
     }
   }
 }

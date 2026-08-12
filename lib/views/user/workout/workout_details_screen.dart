@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
+import 'package:gym/views/widgets/custom_elevated_button.dart';
 
 class WorkoutDetailsScreen extends StatelessWidget {
   const WorkoutDetailsScreen({super.key});
@@ -163,17 +164,8 @@ class WorkoutDetailsScreen extends StatelessWidget {
                       ),
                       const SizedBox(width: 16),
                       Expanded(
-                        child: ElevatedButton(
+                        child: CustomElevatedButton(
                           onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: AppColors.surface,
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            elevation: 0,
-                          ),
                           child: const Text(
                             'Start Workout',
                             style: TextStyle(

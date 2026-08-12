@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/elegant_gradient_background.dart';
+import 'package:gym/views/widgets/custom_elevated_button.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -15,149 +16,167 @@ class ProfileScreen extends StatelessWidget {
         child: CustomScrollView(
           physics: const BouncingScrollPhysics(),
           slivers: [
-          SliverAppBar(
-            expandedHeight: 260.0,
-            floating: false,
-            pinned: true,
-            elevation: 0,
-            backgroundColor: AppColors.background.withValues(alpha: 0.95),
-            flexibleSpace: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                // Determine if we are nearly collapsed
-                bool isCollapsed = constraints.biggest.height <=
-                    kToolbarHeight + MediaQuery.of(context).padding.top + 20;
+            SliverAppBar(
+              expandedHeight: 260.0,
+              floating: false,
+              pinned: true,
+              elevation: 0,
+              backgroundColor: AppColors.background.withValues(alpha: 0.95),
+              flexibleSpace: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  // Determine if we are nearly collapsed
+                  bool isCollapsed =
+                      constraints.biggest.height <=
+                      kToolbarHeight + MediaQuery.of(context).padding.top + 20;
 
-                return FlexibleSpaceBar(
-                  centerTitle: true,
-                  title: isCollapsed
-                      ? const Text(
+                  return FlexibleSpaceBar(
+                    centerTitle: true,
+                    title: isCollapsed
+                        ? const Text(
+                            'John Doe',
+                            style: TextStyle(
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.w900,
+                              fontSize: 18,
+                              letterSpacing: -0.5,
+                            ),
+                          )
+                        : null,
+                    background: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40),
+                        Container(
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: AppColors.black.withValues(alpha: 0.05),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: const CircleAvatar(
+                            radius: 54,
+                            backgroundImage: NetworkImage(
+                              'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
                           'John Doe',
                           style: TextStyle(
-                            color: AppColors.textPrimary,
+                            fontSize: 26,
                             fontWeight: FontWeight.w900,
-                            fontSize: 18,
+                            color: AppColors.textPrimary,
                             letterSpacing: -0.5,
                           ),
-                        )
-                      : null,
-                  background: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(height: 40),
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: BoxDecoration(
-                          color: AppColors.surface,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: AppColors.black.withValues(alpha: 0.05),
-                              blurRadius: 20,
-                              offset: const Offset(0, 10),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: const Text(
+                            'PRO MEMBER',
+                            style: TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 11,
+                              letterSpacing: 1.0,
                             ),
-                          ],
-                        ),
-                        child: const CircleAvatar(
-                          radius: 54,
-                          backgroundImage: NetworkImage(
-                            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80',
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      const Text(
-                        'John Doe',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w900,
-                          color: AppColors.textPrimary,
-                          letterSpacing: -0.5,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 14,
-                          vertical: 6,
-                        ),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: const Text(
-                          'PRO MEMBER',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w800,
-                            fontSize: 11,
-                            letterSpacing: 1.0,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
+                      ],
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Personal Information',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppColors.black.withValues(alpha: 0.03),
-                          blurRadius: 15,
-                          offset: const Offset(0, 5),
-                        ),
-                      ],
-                      border: Border.all(
-                        color: AppColors.border.withValues(alpha: 0.5),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 16,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Personal Information',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        _buildInfoRow(Icons.height, 'Height', '180 cm'),
-                        _buildDivider(),
-                        _buildInfoRow(Icons.monitor_weight_outlined, 'Weight', '75 kg'),
-                        _buildDivider(),
-                        _buildInfoRow(Icons.bloodtype_outlined, 'Blood Group', 'O+'),
-                        _buildDivider(),
-                        _buildInfoRow(Icons.flag_outlined, 'Fitness Goal', 'Muscle Gain'),
-                        _buildDivider(),
-                        _buildInfoRow(Icons.calendar_month_outlined, 'Joining Date', 'Jan 12, 2024'),
-                      ],
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppColors.surface,
+                        borderRadius: BorderRadius.circular(24),
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppColors.black.withValues(alpha: 0.03),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                        border: Border.all(
+                          color: AppColors.border.withValues(alpha: 0.5),
+                        ),
+                      ),
+                      child: Column(
+                        children: [
+                          _buildInfoRow(Icons.height, 'Height', '180 cm'),
+                          CustomDivider(),
+                          _buildInfoRow(
+                            Icons.monitor_weight_outlined,
+                            'Weight',
+                            '75 kg',
+                          ),
+                          CustomDivider(),
+                          _buildInfoRow(
+                            Icons.bloodtype_outlined,
+                            'Blood Group',
+                            'O+',
+                          ),
+                          CustomDivider(),
+                          _buildInfoRow(
+                            Icons.flag_outlined,
+                            'Fitness Goal',
+                            'Muscle Gain',
+                          ),
+                          CustomDivider(),
+                          _buildInfoRow(
+                            Icons.calendar_month_outlined,
+                            'Joining Date',
+                            'Jan 12, 2024',
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  const Text(
-                    'Account Settings',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
+                    const SizedBox(height: 32),
+                    const Text(
+                      'Account Settings',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuSection(
-                    context,
-                    [
+                    const SizedBox(height: 16),
+                    _buildMenuSection(context, [
                       ProfileMenuItem(
                         title: 'Edit Profile',
                         icon: Icons.person_outline,
@@ -172,21 +191,18 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.primary,
                         bgColor: AppColors.primary.withValues(alpha: 0.1),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  const Text(
-                    'General',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.textPrimary,
+                    ]),
+                    const SizedBox(height: 32),
+                    const Text(
+                      'General',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.textPrimary,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  _buildMenuSection(
-                    context,
-                    [
+                    const SizedBox(height: 16),
+                    _buildMenuSection(context, [
                       ProfileMenuItem(
                         title: 'About Gym',
                         icon: Icons.info_outline,
@@ -215,24 +231,9 @@ class ProfileScreen extends StatelessWidget {
                         color: AppColors.textLight,
                         bgColor: AppColors.border.withValues(alpha: 0.3),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.surface,
-                        foregroundColor: Colors.redAccent,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: Colors.redAccent.withValues(alpha: 0.2),
-                          ),
-                        ),
-                      ),
+                    ]),
+                    const SizedBox(height: 40),
+                    CustomElevatedButton(
                       onPressed: () => context.go(AppRoutes.login),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -249,14 +250,13 @@ class ProfileScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 40),
-                ],
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }
@@ -353,14 +353,6 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildDivider() {
-    return Divider(
-      height: 24,
-      thickness: 1,
-      color: AppColors.border.withValues(alpha: 0.3),
     );
   }
 }

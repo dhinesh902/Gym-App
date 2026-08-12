@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/actionbar.dart';
+import 'package:gym/views/widgets/custom_elevated_button.dart';
 
 class AttendanceScreen extends StatelessWidget {
   const AttendanceScreen({super.key});
@@ -97,7 +98,7 @@ class AttendanceScreen extends StatelessWidget {
                   SizedBox(
                     width: double.infinity,
                     height: 60,
-                    child: ElevatedButton.icon(
+                    child: CustomElevatedButton.icon(
                       onPressed: () {
                         // Implement QR Check-in logic
                       },
@@ -110,14 +111,7 @@ class AttendanceScreen extends StatelessWidget {
                           letterSpacing: 0.5,
                         ),
                       ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.surface,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                      ),
+
                     ),
                   ),
                   const SizedBox(height: 40),
