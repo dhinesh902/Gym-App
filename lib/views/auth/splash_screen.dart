@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,8 +16,27 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkInitialNavigation();
+  }
+
+  Future<void> _checkInitialNavigation() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;
+    final token = prefs.getString('token');
+    final role = prefs.getString('role');
+
     Timer(const Duration(seconds: 2), () {
-      context.go(AppRoutes.onboarding);
+      if (isFirstLaunch) {
+        context.go(AppRoutes.onboarding);
+      } else if (token != null && token.isNotEmpty) {
+        if (role == 'trainer') {
+          context.go(AppRoutes.trainerHome);
+        } else {
+          context.go(AppRoutes.home);
+        }
+      } else {
+        context.go(AppRoutes.login);
+      }
     });
   }
 

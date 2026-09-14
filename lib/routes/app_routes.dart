@@ -21,13 +21,18 @@ class AppRoutes {
   static const contactUs = '/contact-us';
   static const privacyPolicy = '/privacy-policy';
   static const terms = '/terms';
+  static const disclaimer = '/disclaimer';
+  static const cancellationRefund = '/cancellation-refund';
+  static const trainerPolicy = '/trainer-policy';
   static const trainerHome = '/trainer-home';
   static const trainerEditProfile = '/trainer-edit-profile';
   static const trainerChangePassword = '/trainer-change-password';
-  static const trainerNotificationSettings = '/trainer-notification-settings';
-  static const trainerPrivacySettings = '/trainer-privacy-settings';
   static const trainerCustomerDetails = '/trainer-customer-details';
   static const trainerDiet = '/trainer-diet';
   static const trainerAddFood = '/trainer-add-food';
   static const trainerAssignDiet = '/trainer-assign-diet';
+  static const trainerWorkouts = '/trainer-workouts';
+  static const trainerWorkoutAddEdit = '/trainer-workout-add-edit';
+  static const trainerCustomerAddEdit = '/trainer-customer-add-edit';
+  static const trainerAssignWorkout = '/trainer-assign-workout';
 }

@@ -81,45 +81,38 @@ class CustomSliverAppBar extends StatelessWidget {
         ),
       ),
       leadingWidth: 80,
-      leading: Navigator.canPop(context)
-          ? Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                  child: Container(
-                    margin: const EdgeInsets.only(left: 20),
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: AppColors.surface.withValues(alpha: 0.2),
-                        width: 1.5,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.1),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => Navigator.maybePop(context),
-                      icon: const Icon(
-                        Icons.arrow_back_ios_new_rounded,
-                        color: AppColors.surface,
-                        size: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            )
-          : null,
+      // leading: Navigator.canPop(context)
+      //     ? Center(
+      //         child: ClipRRect(
+      //           borderRadius: BorderRadius.circular(16),
+      //           child: BackdropFilter(
+      //             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      //             child: Container(
+      //               margin: const EdgeInsets.only(left: 20),
+      //               width: 48,
+      //               height: 48,
+      //               decoration: BoxDecoration(
+      //                 color: AppColors.surface.withValues(alpha: 0.1),
+      //                 borderRadius: BorderRadius.circular(16),
+      //                 border: Border.all(
+      //                   color: AppColors.surface.withValues(alpha: 0.2),
+      //                   width: 1.5,
+      //                 ),
+      //               ),
+      //               child: IconButton(
+      //                 padding: EdgeInsets.zero,
+      //                 onPressed: () => Navigator.maybePop(context),
+      //                 icon: const Icon(
+      //                   Icons.arrow_back_ios_new_rounded,
+      //                   color: AppColors.primary,
+      //                   size: 20,
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       )
+      //     : null,
       actions: actions != null
           ? [
               Padding(

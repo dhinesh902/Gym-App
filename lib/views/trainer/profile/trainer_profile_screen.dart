@@ -1,14 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:gym/controller/auth/auth_bloc.dart';
+import 'package:gym/controller/auth/auth_event.dart';
+import 'package:gym/providers/trainer_profile_provider.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
-import 'package:gym/views/widgets/elegant_gradient_background.dart';
+import 'package:provider/provider.dart';
 
-class TrainerProfileScreen extends StatelessWidget {
+class TrainerProfileScreen extends StatefulWidget {
   const TrainerProfileScreen({super.key});
 
   @override
+  State<TrainerProfileScreen> createState() => _TrainerProfileScreenState();
+}
+
+class _TrainerProfileScreenState extends State<TrainerProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TrainerProfileProvider>().loadProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final trainerProfileProvider = context.watch<TrainerProfileProvider>();
+    final _isLoading = trainerProfileProvider.isLoading;
+    final trainer = trainerProfileProvider.trainerDetail;
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+      );
+    }
+
+    if (trainer == null) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: const Center(child: Text("Failed to load profile")),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -85,11 +119,11 @@ class TrainerProfileScreen extends StatelessWidget {
                                   color: AppColors.surface,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const CircleAvatar(
+                                child: CircleAvatar(
                                   radius: 50,
-                                  backgroundImage: NetworkImage(
-                                    'https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=100&auto=format&fit=crop',
-                                  ),
+                                  backgroundImage: (trainer.profilephoto != null && !trainer.profilephoto!.contains('[object'))
+                                      ? NetworkImage('http://localhost:3000${trainer.profilephoto}')
+                                      : const NetworkImage('https://images.unsplash.com/photo-1594381898411-846e7d193883?q=80&w=100&auto=format&fit=crop'),
                                 ),
                               ),
                             ),
@@ -121,9 +155,9 @@ class TrainerProfileScreen extends StatelessWidget {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        const Text(
-                          'Coach Mike',
-                          style: TextStyle(
+                        Text(
+                          trainer.fullname,
+                          style: const TextStyle(
                             color: AppColors.textPrimary,
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
@@ -150,10 +184,10 @@ class TrainerProfileScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'mike.trainer@gym.com\n+1 234 567 8900',
+                        Text(
+                          '${trainer.email}\n${trainer.phone}',
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: AppColors.textLight,
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -191,41 +225,28 @@ class TrainerProfileScreen extends StatelessWidget {
                       ),
                     ),
                     child: Column(
-                      children: const [
+                      children: [
                         _ProfileDetailTile(
                           icon: Icons.star_rounded,
                           title: 'Specialization',
-                          subtitle: 'Strength & Conditioning, HIIT',
+                          subtitle: trainer.speciality,
                         ),
-                        CustomDivider(),
+                        const CustomDivider(),
                         _ProfileDetailTile(
                           icon: Icons.timeline_rounded,
                           title: 'Experience',
-                          subtitle: '8 Years',
+                          subtitle: '${trainer.experience} Years',
                         ),
-                        CustomDivider(),
-                        _ProfileDetailTile(
-                          icon: Icons.workspace_premium_rounded,
-                          title: 'Certifications',
-                          subtitle: 'ACE Certified Personal Trainer, CPR/AED',
-                        ),
-                        CustomDivider(),
-                        _ProfileDetailTile(
-                          icon: Icons.language_rounded,
-                          title: 'Languages',
-                          subtitle: 'English, Spanish',
-                        ),
-                        CustomDivider(),
+                        const CustomDivider(),
                         _ProfileDetailTile(
                           icon: Icons.schedule_rounded,
-                          title: 'Working Hours',
-                          subtitle: 'Mon - Fri, 06:00 AM - 02:00 PM',
+                          title: 'Shift Timing',
+                          subtitle: trainer.shifttiming,
                         ),
                       ],
                     ),
                   ),
                   const SizedBox(height: 32),
-
                   const Text(
                     'Settings',
                     style: TextStyle(
@@ -256,6 +277,7 @@ class TrainerProfileScreen extends StatelessWidget {
                         title: 'Edit Profile',
                         icon: Icons.person_outline_rounded,
                         route: AppRoutes.trainerEditProfile,
+                        extra: trainer,
                         color: AppColors.lightBlue,
                         bgColor: AppColors.lightBlueBg,
                       ),
@@ -266,24 +288,73 @@ class TrainerProfileScreen extends StatelessWidget {
                         color: AppColors.primary,
                         bgColor: AppColors.primary.withValues(alpha: 0.1),
                       ),
+                    ]),
+                  ),
+                  const SizedBox(height: 32),
+                  const Text(
+                    'General',
+                    style: TextStyle(
+                      color: AppColors.textPrimary,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.circular(28),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.black.withValues(alpha: 0.03),
+                          blurRadius: 20,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                      border: Border.all(
+                        color: AppColors.border.withValues(alpha: 0.5),
+                      ),
+                    ),
+                    child: _buildMenuSection(context, [
                       TrainerProfileMenuItem(
-                        title: 'Notification Settings',
-                        icon: Icons.notifications_none_rounded,
-                        route: AppRoutes.trainerNotificationSettings,
-                        color: AppColors.accent,
-                        bgColor: AppColors.accent.withValues(alpha: 0.1),
+                        title: 'Disclaimer',
+                        icon: Icons.gavel_outlined,
+                        route: AppRoutes.disclaimer,
+                        color: AppColors.textLight,
+                        bgColor: AppColors.border.withValues(alpha: 0.3),
                       ),
                       TrainerProfileMenuItem(
-                        title: 'Privacy Settings',
+                        title: 'Cancellation & Refund',
+                        icon: Icons.receipt_long_outlined,
+                        route: AppRoutes.cancellationRefund,
+                        color: AppColors.textLight,
+                        bgColor: AppColors.border.withValues(alpha: 0.3),
+                      ),
+                      TrainerProfileMenuItem(
+                        title: 'Privacy Policy',
                         icon: Icons.privacy_tip_outlined,
-                        route: AppRoutes.trainerPrivacySettings,
+                        route: AppRoutes.privacyPolicy,
+                        color: AppColors.textLight,
+                        bgColor: AppColors.border.withValues(alpha: 0.3),
+                      ),
+                      TrainerProfileMenuItem(
+                        title: 'Terms & Conditions',
+                        icon: Icons.description_outlined,
+                        route: AppRoutes.terms,
+                        color: AppColors.textLight,
+                        bgColor: AppColors.border.withValues(alpha: 0.3),
+                      ),
+                      TrainerProfileMenuItem(
+                        title: 'Trainer Policy',
+                        icon: Icons.assignment_ind_outlined,
+                        route: AppRoutes.trainerPolicy,
                         color: AppColors.textLight,
                         bgColor: AppColors.border.withValues(alpha: 0.3),
                       ),
                     ]),
                   ),
                   const SizedBox(height: 32),
-
                   // Logout Button
                   Container(
                     height: 55,
@@ -297,7 +368,10 @@ class TrainerProfileScreen extends StatelessWidget {
                       ),
                     ),
                     child: TextButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        context.read<AuthBloc>().add(AuthLogoutRequested());
+                        context.go(AppRoutes.login);
+                      },
                       icon: const Icon(
                         Icons.logout_rounded,
                         color: AppColors.error,
@@ -431,7 +505,13 @@ Widget _buildMenuSection(
               size: 20,
               color: AppColors.textLight.withValues(alpha: 0.5),
             ),
-            onTap: () => context.push(item.route),
+            onTap: () {
+              if (item.extra != null) {
+                context.push(item.route, extra: item.extra);
+              } else {
+                context.push(item.route);
+              }
+            },
           ),
           if (!isLast)
             Divider(
@@ -451,6 +531,7 @@ class TrainerProfileMenuItem {
   final String title;
   final IconData icon;
   final String route;
+  final dynamic extra;
   final Color color;
   final Color bgColor;
 
@@ -458,7 +539,23 @@ class TrainerProfileMenuItem {
     required this.title,
     required this.icon,
     required this.route,
+    this.extra,
     required this.color,
     required this.bgColor,
   });
+}
+
+class CustomDivider extends StatelessWidget {
+  const CustomDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      height: 1,
+      thickness: 1,
+      color: AppColors.border.withValues(alpha: 0.3),
+      indent: 72,
+      endIndent: 24,
+    );
+  }
 }

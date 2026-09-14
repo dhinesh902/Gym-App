@@ -11,24 +11,27 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
-import 'package:gym/providers/profile_provider.dart';
+import 'package:gym/providers/trainer_customers_provider.dart';
 import 'package:gym/utils/snackbar_utils.dart';
 import 'package:gym/views/widgets/elegant_gradient_background.dart';
+import 'package:gym/service/member_service.dart';
 
-class EditProfileScreen extends StatefulWidget {
-  final MemberDetailModel? member;
+class CustomerAddEditScreen extends StatefulWidget {
+  final MemberDetailModel? customer;
 
-  const EditProfileScreen({super.key, this.member});
+  const CustomerAddEditScreen({super.key, this.customer});
 
   @override
-  State<EditProfileScreen> createState() => _EditProfileScreenState();
+  State<CustomerAddEditScreen> createState() => _CustomerAddEditScreenState();
 }
 
-class _EditProfileScreenState extends State<EditProfileScreen> {
+class _CustomerAddEditScreenState extends State<CustomerAddEditScreen> {
   final _formKey = GlobalKey<FormState>();
+  final MemberService _memberService = MemberService();
 
   late TextEditingController _fullnameController;
   late TextEditingController _emailController;
+  late TextEditingController _passwordController;
   late TextEditingController _phoneController;
   late TextEditingController _dobController;
   late TextEditingController _genderController;
@@ -44,33 +47,37 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   late TextEditingController _statusController;
 
   File? _imageFile;
+  bool _isSaving = false;
+
+  bool get isEditing => widget.customer != null;
 
   @override
   void initState() {
     super.initState();
-    final m = widget.member;
-    _fullnameController = TextEditingController(text: m?.fullname ?? '');
-    _emailController = TextEditingController(text: m?.email ?? '');
-    _phoneController = TextEditingController(text: m?.phone ?? '');
-    _dobController = TextEditingController(text: m?.dateofbirth ?? '');
-    _genderController = TextEditingController(text: m?.gender ?? '');
-    _emergencyController = TextEditingController(text: m?.emergency ?? '');
-    _addressController = TextEditingController(text: m?.address ?? '');
-    _heightController = TextEditingController(text: m?.height.toString() ?? '');
-    _weightController = TextEditingController(text: m?.weight.toString() ?? '');
-    _bloodgroupController = TextEditingController(text: m?.bloodgroup ?? '');
-    _fitnessgoalController = TextEditingController(text: m?.fitnessgoal ?? '');
+    final c = widget.customer;
+    _fullnameController = TextEditingController(text: c?.fullname ?? '');
+    _emailController = TextEditingController(text: c?.email ?? '');
+    _passwordController = TextEditingController();
+    _phoneController = TextEditingController(text: c?.phone ?? '');
+    _dobController = TextEditingController(text: c?.dateofbirth ?? '');
+    _genderController = TextEditingController(text: c?.gender ?? '');
+    _emergencyController = TextEditingController(text: c?.emergency ?? '');
+    _addressController = TextEditingController(text: c?.address ?? '');
+    _heightController = TextEditingController(text: c?.height.toString() ?? '');
+    _weightController = TextEditingController(text: c?.weight.toString() ?? '');
+    _bloodgroupController = TextEditingController(text: c?.bloodgroup ?? '');
+    _fitnessgoalController = TextEditingController(text: c?.fitnessgoal ?? '');
     _assignedtrainerController = TextEditingController(
-      text: m?.assignedtrainer.toString() ?? '',
+      text: c?.assignedtrainer.toString() ?? '',
     );
     _membershipplanidController = TextEditingController(
-      text: m?.membershipplanid.toString() ?? '',
+      text: c?.membershipplanid.toString() ?? '',
     );
-    _joiningdateController = TextEditingController(text: m?.joiningdate ?? '');
-    _statusController = TextEditingController(text: m?.status ?? 'active');
+    _joiningdateController = TextEditingController(text: c?.joiningdate ?? '');
+    _statusController = TextEditingController(text: c?.status ?? 'active');
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProfileProvider>().loadDropdowns();
+      context.read<TrainerCustomersProvider>().loadDropdowns();
     });
   }
 
@@ -78,6 +85,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _fullnameController.dispose();
     _emailController.dispose();
+    _passwordController.dispose();
     _phoneController.dispose();
     _dobController.dispose();
     _genderController.dispose();
@@ -106,8 +114,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   Future<void> _selectDate(BuildContext context,
       TextEditingController controller, {
-        int initialYearsBack = 0,
-      }) async {
+      int initialYearsBack = 0,
+  }) async {
     DateTime initialDate = DateTime.now().subtract(
       Duration(days: 365 * initialYearsBack),
     );
@@ -129,39 +137,73 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     }
   }
 
-  Future<void> _saveProfile() async {
+  Future<void> _saveCustomer() async {
     if (!_formKey.currentState!.validate()) return;
-    if (widget.member == null) return;
+    
+    setState(() {
+      _isSaving = true;
+    });
 
     try {
-      final request = MemberUpdateRequest(
-        fullname: _fullnameController.text,
-        email: _emailController.text,
-        phone: _phoneController.text,
-        dateofbirth: _dobController.text,
-        gender: _genderController.text,
-        emergency: _emergencyController.text,
-        address: _addressController.text,
-        height: _heightController.text,
-        weight: _weightController.text,
-        bloodgroup: _bloodgroupController.text,
-        fitnessgoal: _fitnessgoalController.text,
-        assignedtrainer: _assignedtrainerController.text,
-        membershipplanid: _membershipplanidController.text,
-        joiningdate: _joiningdateController.text,
-        status: _statusController.text,
-        profilephoto: _imageFile,
-      );
-
-      await context.read<ProfileProvider>().updateProfile(request);
+      if (isEditing) {
+        final request = MemberUpdateRequest(
+          fullname: _fullnameController.text,
+          email: _emailController.text,
+          phone: _phoneController.text,
+          dateofbirth: _dobController.text,
+          gender: _genderController.text,
+          emergency: _emergencyController.text,
+          address: _addressController.text,
+          height: _heightController.text,
+          weight: _weightController.text,
+          bloodgroup: _bloodgroupController.text,
+          fitnessgoal: _fitnessgoalController.text,
+          assignedtrainer: _assignedtrainerController.text,
+          membershipplanid: _membershipplanidController.text,
+          joiningdate: _joiningdateController.text,
+          status: _statusController.text,
+          profilephoto: _imageFile,
+        );
+        await _memberService.updateMember(widget.customer!.id, request);
+        SnackBarUtils.showSuccess('Member updated successfully!');
+      } else {
+        final request = MemberRegisterRequest(
+          fullname: _fullnameController.text,
+          email: _emailController.text,
+          password: _passwordController.text,
+          phone: _phoneController.text,
+          dateofbirth: _dobController.text,
+          gender: _genderController.text,
+          emergency: _emergencyController.text,
+          address: _addressController.text,
+          height: _heightController.text,
+          weight: _weightController.text,
+          bloodgroup: _bloodgroupController.text,
+          fitnessgoal: _fitnessgoalController.text,
+          assignedtrainer: _assignedtrainerController.text,
+          membershipplanid: _membershipplanidController.text,
+          joiningdate: _joiningdateController.text,
+          status: _statusController.text,
+          profilephoto: _imageFile,
+        );
+        await _memberService.registerMember(request);
+        SnackBarUtils.showSuccess('Member added successfully!');
+      }
 
       if (mounted) {
-        SnackBarUtils.showSuccess('Profile updated successfully!');
+        // Refresh customer list
+        context.read<TrainerCustomersProvider>().loadCustomers();
         context.pop();
       }
     } catch (e) {
       if (mounted) {
-        SnackBarUtils.showError('Failed to update: $e');
+        SnackBarUtils.showError('Failed to save: $e');
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isSaving = false;
+        });
       }
     }
   }
@@ -245,14 +287,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   radius: 60,
                   backgroundImage: _imageFile != null
                       ? FileImage(_imageFile!) as ImageProvider
-                      : (widget.member?.profilephoto != null &&
-                      !widget.member!.profilephoto!.contains('[object'))
-                      ? NetworkImage(
-                    'http://localhost:3000${widget.member!.profilephoto}',
-                  )
-                      : const NetworkImage(
-                    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80',
-                  ),
+                      : (widget.customer?.profilephoto != null &&
+                              !widget.customer!.profilephoto!.contains('[object'))
+                          ? NetworkImage(
+                              'http://localhost:3000${widget.customer!.profilephoto}',
+                            )
+                          : const NetworkImage(
+                              'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80',
+                            ),
                 ),
               ),
             ),
@@ -280,15 +322,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileProvider = context.watch<ProfileProvider>();
-    final _isLoadingDropdowns = profileProvider.isLoadingDropdowns;
-    final _isLoading = profileProvider.isLoading;
-    final _trainers = profileProvider.trainers;
-    final _plans = profileProvider.plans;
+    final provider = context.watch<TrainerCustomersProvider>();
+    final bool isLoadingDropdowns = provider.isLoadingDropdowns;
+    final trainers = provider.trainers;
+    final plans = provider.plans;
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: const CustomAppBar(title: 'Edit Profile'),
+      appBar: CustomAppBar(title: isEditing ? 'Edit Member' : 'Add Member'),
       body: ElegantGradientBackground(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -319,6 +360,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       keyboardType: TextInputType.emailAddress,
                       validator: (v) => v!.isEmpty ? 'Required' : null,
                     ),
+                    if (!isEditing) ...[
+                      const SizedBox(height: 16),
+                      CustomTextField(
+                        controller: _passwordController,
+                        labelText: 'Password',
+                        hintText: 'Enter initial password',
+                        prefixIcon: Icons.lock_outline_rounded,
+                        obscureText: true,
+                        validator: (v) => v!.isEmpty ? 'Required' : null,
+                      ),
+                    ],
                     const SizedBox(height: 16),
                     CustomTextField(
                       controller: _phoneController,
@@ -360,7 +412,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         if (val != null) setState(() => _genderController.text = val);
                       },
                       validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                          value == null || value.isEmpty ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -424,7 +476,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         if (val != null) setState(() => _bloodgroupController.text = val);
                       },
                       validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                          value == null || value.isEmpty ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
                     CustomDropdown<String>(
@@ -447,7 +499,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         if (val != null) setState(() => _fitnessgoalController.text = val);
                       },
                       validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                          value == null || value.isEmpty ? 'Required' : null,
                     ),
                   ],
                 ),
@@ -457,52 +509,50 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     CustomDropdown<String>(
                       labelText: 'Assigned Trainer',
-                      hintText: _isLoadingDropdowns ? 'Loading...' : 'Select Trainer',
+                      hintText: isLoadingDropdowns ? 'Loading...' : 'Select Trainer',
                       prefixIcon: Icons.sports,
                       value: _assignedtrainerController.text.isNotEmpty
                           ? _assignedtrainerController.text
                           : null,
-                      items: _trainers
+                      items: trainers
                           .map(
                             (e) => DropdownMenuItem(
-                          value: e.id.toString(),
-                          child: Text('${e.fullname} (${e.id})'),
-                        ),
-                      )
-                          .toList(),
-                      onChanged: (val) {
-                        if (val != null) setState(() => _assignedtrainerController.text = val);
-                      },
-                      validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    AbsorbPointer(
-                      child: Opacity(
-                        opacity: 0.7,
-                        child: CustomDropdown<String>(
-                          labelText: 'Membership Plan',
-                          hintText: _isLoadingDropdowns ? 'Loading...' : 'Select Plan',
-                          prefixIcon: Icons.card_membership_outlined,
-                          value: _membershipplanidController.text.isNotEmpty
-                              ? _membershipplanidController.text
-                              : null,
-                          items: _plans
-                              .map(
-                                (e) => DropdownMenuItem(
                               value: e.id.toString(),
-                              child: Text('${e.name} (${e.price ?? 0})'),
+                              child: Text('${e.fullname} (${e.id})'),
                             ),
                           )
-                              .toList(),
-                          onChanged: (val) {
-                            if (val != null)
-                              setState(() => _membershipplanidController.text = val);
-                          },
-                          validator: (value) =>
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() => _assignedtrainerController.text = val);
+                        }
+                      },
+                      validator: (value) =>
                           value == null || value.isEmpty ? 'Required' : null,
-                        ),
-                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    CustomDropdown<String>(
+                      labelText: 'Membership Plan',
+                      hintText: isLoadingDropdowns ? 'Loading...' : 'Select Plan',
+                      prefixIcon: Icons.card_membership_outlined,
+                      value: _membershipplanidController.text.isNotEmpty
+                          ? _membershipplanidController.text
+                          : null,
+                      items: plans
+                          .map(
+                            (e) => DropdownMenuItem(
+                              value: e.id.toString(),
+                              child: Text('${e.name} (\$${e.price ?? 0})'),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        if (val != null) {
+                          setState(() => _membershipplanidController.text = val);
+                        }
+                      },
+                      validator: (value) =>
+                          value == null || value.isEmpty ? 'Required' : null,
                     ),
                     const SizedBox(height: 16),
                     GestureDetector(
@@ -532,27 +582,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         if (val != null) setState(() => _statusController.text = val);
                       },
                       validator: (value) =>
-                      value == null || value.isEmpty ? 'Required' : null,
+                          value == null || value.isEmpty ? 'Required' : null,
                     ),
                   ],
                 ),
                 const SizedBox(height: 20),
-                _isLoading
+                _isSaving
                     ? const Center(child: CircularProgressIndicator())
                     : SizedBox(
-                  width: double.infinity,
-                  child: CustomElevatedButton(
-                    onPressed: _saveProfile,
-                    child: const Text(
-                      'Save Changes',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w800,
-                        color: Colors.white,
+                        width: double.infinity,
+                        child: CustomElevatedButton(
+                          onPressed: _saveCustomer,
+                          child: Text(
+                            isEditing ? 'Save Changes' : 'Add Member',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 40),
               ],
             ),

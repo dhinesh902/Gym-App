@@ -340,7 +340,9 @@ class _QuickActionsScroller extends StatelessWidget {
             title: 'Add Workout',
             icon: Icons.fitness_center_rounded,
             color: const Color(0xFFF43F5E),
-            onTap: () {},
+            onTap: () {
+              context.push(AppRoutes.trainerWorkouts);
+            },
           ),
           const SizedBox(width: 16),
           _ActionPill(

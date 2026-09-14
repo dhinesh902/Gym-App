@@ -46,9 +46,12 @@ class CustomElevatedButton extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
-        gradient: LinearGradient(
-          colors: [AppColors.secondary, AppColors.primary],
-        ),
+        gradient: onPressed == null 
+            ? null 
+            : const LinearGradient(
+                colors: [AppColors.secondary, AppColors.primary],
+              ),
+        color: onPressed == null ? AppColors.border.withValues(alpha: 0.5) : null,
       ),
       child: ElevatedButton(
         onPressed: onPressed,

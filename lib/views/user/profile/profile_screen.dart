@@ -3,13 +3,50 @@ import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/elegant_gradient_background.dart';
-import 'package:gym/views/widgets/custom_elevated_button.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:gym/controller/auth/auth_bloc.dart';
+import 'package:gym/controller/auth/auth_event.dart';
+import 'package:gym/providers/profile_provider.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<ProfileProvider>().loadProfile();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final profileProvider = context.watch<ProfileProvider>();
+    final _isLoading = profileProvider.isLoading;
+    final _memberDetail = profileProvider.memberDetail;
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColors.background,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
+    }
+
+    final member = _memberDetail;
+    if (member == null) {
+      return Scaffold(
+        backgroundColor: AppColors.background,
+        body: const Center(child: Text("Failed to load profile")),
+      );
+    }
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: ElegantGradientBackground(
@@ -32,9 +69,9 @@ class ProfileScreen extends StatelessWidget {
                   return FlexibleSpaceBar(
                     centerTitle: true,
                     title: isCollapsed
-                        ? const Text(
-                            'John Doe',
-                            style: TextStyle(
+                        ? Text(
+                            member.fullname,
+                            style: const TextStyle(
                               color: AppColors.textPrimary,
                               fontWeight: FontWeight.w900,
                               fontSize: 18,
@@ -59,17 +96,23 @@ class ProfileScreen extends StatelessWidget {
                               ),
                             ],
                           ),
-                          child: const CircleAvatar(
+                          child: CircleAvatar(
                             radius: 54,
-                            backgroundImage: NetworkImage(
-                              'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80',
-                            ),
+                            backgroundImage:
+                                (member.profilephoto != null &&
+                                    !member.profilephoto!.contains('[object'))
+                                ? NetworkImage(
+                                    'http://localhost:3000${member.profilephoto}',
+                                  )
+                                : const NetworkImage(
+                                    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=500&q=80',
+                                  ),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          'John Doe',
-                          style: TextStyle(
+                        Text(
+                          member.fullname,
+                          style: const TextStyle(
                             fontSize: 26,
                             fontWeight: FontWeight.w900,
                             color: AppColors.textPrimary,
@@ -86,9 +129,10 @@ class ProfileScreen extends StatelessWidget {
                             color: AppColors.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Text(
-                            'PRO MEMBER',
-                            style: TextStyle(
+                          child: Text(
+                            (member.membershipPlan?.name ?? 'MEMBER')
+                                .toUpperCase(),
+                            style: const TextStyle(
                               color: AppColors.primary,
                               fontWeight: FontWeight.w800,
                               fontSize: 11,
@@ -138,30 +182,34 @@ class ProfileScreen extends StatelessWidget {
                       ),
                       child: Column(
                         children: [
-                          _buildInfoRow(Icons.height, 'Height', '180 cm'),
+                          _buildInfoRow(
+                            Icons.height,
+                            'Height',
+                            '${member.height} cm',
+                          ),
                           CustomDivider(),
                           _buildInfoRow(
                             Icons.monitor_weight_outlined,
                             'Weight',
-                            '75 kg',
+                            '${member.weight} kg',
                           ),
                           CustomDivider(),
                           _buildInfoRow(
                             Icons.bloodtype_outlined,
                             'Blood Group',
-                            'O+',
+                            member.bloodgroup,
                           ),
                           CustomDivider(),
                           _buildInfoRow(
                             Icons.flag_outlined,
                             'Fitness Goal',
-                            'Muscle Gain',
+                            member.fitnessgoal,
                           ),
                           CustomDivider(),
                           _buildInfoRow(
                             Icons.calendar_month_outlined,
                             'Joining Date',
-                            'Jan 12, 2024',
+                            member.joiningdate,
                           ),
                         ],
                       ),
@@ -181,6 +229,7 @@ class ProfileScreen extends StatelessWidget {
                         title: 'Edit Profile',
                         icon: Icons.person_outline,
                         route: AppRoutes.editProfile,
+                        extra: member,
                         color: AppColors.lightBlue,
                         bgColor: AppColors.lightBlueBg,
                       ),
@@ -218,6 +267,20 @@ class ProfileScreen extends StatelessWidget {
                         bgColor: AppColors.lightGreenBg,
                       ),
                       ProfileMenuItem(
+                        title: 'Disclaimer',
+                        icon: Icons.gavel_outlined,
+                        route: AppRoutes.disclaimer,
+                        color: AppColors.textLight,
+                        bgColor: AppColors.border.withValues(alpha: 0.3),
+                      ),
+                      ProfileMenuItem(
+                        title: 'Cancellation & Refund',
+                        icon: Icons.receipt_long_outlined,
+                        route: AppRoutes.cancellationRefund,
+                        color: AppColors.textLight,
+                        bgColor: AppColors.border.withValues(alpha: 0.3),
+                      ),
+                      ProfileMenuItem(
                         title: 'Privacy Policy',
                         icon: Icons.privacy_tip_outlined,
                         route: AppRoutes.privacyPolicy,
@@ -245,7 +308,10 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       child: TextButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.read<AuthBloc>().add(AuthLogoutRequested());
+                          context.go(AppRoutes.login);
+                        },
                         icon: const Icon(
                           Icons.logout_rounded,
                           color: AppColors.error,
@@ -322,7 +388,13 @@ class ProfileScreen extends StatelessWidget {
                   size: 20,
                   color: AppColors.textLight.withValues(alpha: 0.5),
                 ),
-                onTap: () => context.push(item.route),
+                onTap: () {
+                  if (item.extra != null) {
+                    context.push(item.route, extra: item.extra);
+                  } else {
+                    context.push(item.route);
+                  }
+                },
               ),
               if (!isLast)
                 Divider(
@@ -377,6 +449,7 @@ class ProfileMenuItem {
   final String title;
   final IconData icon;
   final String route;
+  final dynamic extra;
   final Color color;
   final Color bgColor;
 
@@ -384,7 +457,22 @@ class ProfileMenuItem {
     required this.title,
     required this.icon,
     required this.route,
+    this.extra,
     required this.color,
     required this.bgColor,
   });
+}
+
+class CustomDivider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Divider(
+        height: 1,
+        thickness: 1,
+        color: AppColors.border.withValues(alpha: 0.3),
+      ),
+    );
+  }
 }

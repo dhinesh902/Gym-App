@@ -14,12 +14,15 @@ class CustomTextField extends StatelessWidget {
   final String? initialValue;
   final int maxLines;
   final Color hintColor;
+  final bool readOnly;
+  final VoidCallback? onTap;
+  final ValueChanged<String>? onChanged;
 
   const CustomTextField({
     super.key,
     this.labelText,
     this.hintText,
-     this.prefixIcon,
+    this.prefixIcon,
     this.keyboardType,
     this.obscureText = false,
     this.suffixIcon,
@@ -29,6 +32,9 @@ class CustomTextField extends StatelessWidget {
     this.initialValue,
     this.maxLines = 1,
     this.hintColor = AppColors.textPrimary,
+    this.readOnly = false,
+    this.onTap,
+    this.onChanged,
   });
 
   @override
@@ -41,7 +47,13 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       validator: validator,
       maxLines: maxLines,
-      style: const TextStyle(fontWeight: FontWeight.w600),
+      readOnly: readOnly,
+      onTap: onTap,
+      onChanged: onChanged,
+      style: const TextStyle(
+        fontWeight: FontWeight.w600,
+        color: AppColors.textPrimary,
+      ),
       decoration: InputDecoration(
         labelText: labelText,
         labelStyle: TextStyle(
@@ -58,11 +70,15 @@ class CustomTextField extends StatelessWidget {
           color: hintColor,
         ),
         filled: true,
-        errorStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        fillColor: AppColors.background.withValues(alpha: 0.1),
+        errorStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+        fillColor: AppColors.border.withValues(alpha: 0.3),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.inputRadius),
           borderSide: BorderSide.none,
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppConstants.inputRadius),
+          borderSide: const BorderSide(color: AppColors.border, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.inputRadius),

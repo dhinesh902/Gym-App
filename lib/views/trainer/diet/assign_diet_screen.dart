@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
+import 'package:gym/utils/snackbar_utils.dart';
 import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
@@ -58,17 +59,8 @@ class AssignDietScreen extends StatelessWidget {
 
             CustomElevatedButton(
               onPressed: () {
+                SnackBarUtils.showSuccess('Diet plan assigned successfully!');
                 Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Diet plan assigned successfully!'),
-                    backgroundColor: const Color(0xFF10B981),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 4),

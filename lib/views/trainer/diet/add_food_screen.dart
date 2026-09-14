@@ -100,17 +100,6 @@ class AddFoodScreen extends StatelessWidget {
             const SizedBox(height: 48),
             CustomElevatedButton(
               onPressed: () {
-                Navigator.pop(context);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Food added to library successfully!'),
-                    backgroundColor: const Color(0xFF10B981),
-                    behavior: SnackBarBehavior.floating,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                );
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 4),

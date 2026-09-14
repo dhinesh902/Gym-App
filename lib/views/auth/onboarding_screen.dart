@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/custom_network_image.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -35,6 +36,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'icon': 'groups',
     },
   ];
+
+  void _finishOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isFirstLaunch', false);
+    if (mounted) {
+      context.go(AppRoutes.login);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,7 +78,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Align(
                     alignment: Alignment.topRight,
                     child: TextButton(
-                      onPressed: () => context.go(AppRoutes.authSelection),
+                      onPressed: _finishOnboarding,
                       style: TextButton.styleFrom(
                         foregroundColor: AppColors.textLight,
                       ),
@@ -192,7 +201,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       GestureDetector(
                         onTap: () {
                           if (_currentPage == _onboardingData.length - 1) {
-                            context.go(AppRoutes.authSelection);
+                            _finishOnboarding();
                           } else {
                             _pageController.nextPage(
                               duration: const Duration(milliseconds: 500),

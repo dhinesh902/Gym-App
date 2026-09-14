@@ -4,6 +4,8 @@ import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
+import 'package:provider/provider.dart';
+import 'package:gym/providers/trainer_customers_provider.dart';
 
 class CustomersScreen extends StatefulWidget {
   const CustomersScreen({super.key});
@@ -13,25 +15,36 @@ class CustomersScreen extends StatefulWidget {
 }
 
 class _CustomersScreenState extends State<CustomersScreen> {
-  final List<String> _filters = [
-    'All',
-    'Active',
-    'Inactive',
-    'Weight Loss',
-    'Muscle Building',
-    'Strength',
-    'Beginner',
-  ];
-  int _selectedFilterIndex = 0;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TrainerCustomersProvider>().loadCustomers();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<TrainerCustomersProvider>();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          CustomSliverAppBar(title: "Customers"),
+          CustomSliverAppBar(
+            title: "Customers",
+            actions: [
+              IconButton(
+                onPressed: () {
+                  context.push(AppRoutes.trainerCustomerAddEdit);
+                },
+                icon: const Icon(Icons.add_circle_outline_rounded),
+                color: AppColors.primary,
+                iconSize: 28,
+              ),
+            ],
+          ),
           SliverToBoxAdapter(
             child: Column(
               children: [
@@ -44,99 +57,76 @@ class _CustomersScreenState extends State<CustomersScreen> {
                     hintText: 'Search customers...',
                     prefixIcon: Icons.search_rounded,
                     hintColor: AppColors.textLight.withValues(alpha: 0.5),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 45,
-                  child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    itemCount: _filters.length,
-                    itemBuilder: (context, index) {
-                      final isSelected = _selectedFilterIndex == index;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedFilterIndex = index;
-                            });
-                          },
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 300),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 10,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? AppColors.primary
-                                  : AppColors.surface,
-                              borderRadius: BorderRadius.circular(20),
-                              border: Border.all(
-                                color: isSelected
-                                    ? AppColors.primary
-                                    : AppColors.border.withValues(alpha: 0.3),
-                              ),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: AppColors.primary.withValues(
-                                          alpha: 0.3,
-                                        ),
-                                        blurRadius: 10,
-                                        offset: const Offset(0, 4),
-                                      ),
-                                    ]
-                                  : [],
-                            ),
-                            child: Center(
-                              child: Text(
-                                _filters[index],
-                                style: TextStyle(
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColors.textLight,
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                    onChanged: (value) {
+                      context.read<TrainerCustomersProvider>().searchCustomers(
+                        value,
                       );
                     },
                   ),
                 ),
-                const SizedBox(height: 20),
               ],
             ),
           ),
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20.0,
-              vertical: 10.0,
+          if (provider.isLoading)
+            const SliverFillRemaining(
+              child: Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              ),
+            )
+          else if (provider.filteredCustomers.isEmpty)
+            const SliverFillRemaining(
+              child: Center(
+                child: Text(
+                  'No customers found.',
+                  style: TextStyle(color: AppColors.textLight),
+                ),
+              ),
+            )
+          else
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 10.0,
+              ),
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
+                  final customer = provider.filteredCustomers[index];
+
+                  // Calculate age from date of birth
+                  int age = 0;
+                  try {
+                    final dob = DateTime.parse(customer.dateofbirth);
+                    final now = DateTime.now();
+                    age = now.year - dob.year;
+                    if (now.month < dob.month ||
+                        (now.month == dob.month && now.day < dob.day)) {
+                      age--;
+                    }
+                  } catch (e) {
+                    age = 0;
+                  }
+                  String imageUrl =
+                      'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80';
+                  if (customer.profilephoto != null &&
+                      !customer.profilephoto!.contains('[object')) {
+                    imageUrl = 'http://localhost:3000${customer.profilephoto}';
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 10.0),
+                    child: CustomerCard(
+                      id: customer.id,
+                      name: customer.fullname,
+                      age: age,
+                      gender: customer.gender,
+                      weight: '${customer.weight} kg',
+                      goal: customer.fitnessgoal,
+                      membershipStatus: customer.status,
+                      imageUrl: imageUrl,
+                    ),
+                  );
+                }, childCount: provider.filteredCustomers.length),
+              ),
             ),
-            sliver: SliverList(
-              delegate: SliverChildBuilderDelegate((context, index) {
-                return const Padding(
-                  padding: EdgeInsets.only(bottom: 20.0),
-                  child: CustomerCard(
-                    name: 'Alex Johnson',
-                    age: 28,
-                    gender: 'Male',
-                    weight: '75 kg',
-                    goal: 'Muscle Building',
-                    membershipStatus: 'Active',
-                    imageUrl:
-                        'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=200&q=80',
-                  ),
-                );
-              }, childCount: 5),
-            ),
-          ),
           const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
@@ -145,6 +135,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
 }
 
 class CustomerCard extends StatelessWidget {
+  final int id;
   final String name;
   final int age;
   final String gender;
@@ -155,6 +146,7 @@ class CustomerCard extends StatelessWidget {
 
   const CustomerCard({
     super.key,
+    required this.id,
     required this.name,
     required this.age,
     required this.gender,
@@ -166,11 +158,11 @@ class CustomerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isActive = membershipStatus == 'Active';
+    final bool isActive = membershipStatus.toLowerCase() == 'active';
 
     return GestureDetector(
       onTap: () {
-        context.push(AppRoutes.trainerCustomerDetails);
+        context.push(AppRoutes.trainerCustomerDetails, extra: id);
       },
       child: Container(
         padding: const EdgeInsets.all(20),

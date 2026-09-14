@@ -1,12 +1,12 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
+import 'package:gym/models/auth_models.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/views/auth/splash_screen.dart';
 import 'package:gym/views/auth/auth_selection_screen.dart';
 import 'package:gym/views/auth/login_screen.dart';
 import 'package:gym/views/auth/register_screen.dart';
 import 'package:gym/views/auth/onboarding_screen.dart';
-import 'package:gym/views/settings/terms_conditions_screen.dart';
 import 'package:gym/views/user/diet/diet_screen.dart';
 import 'package:gym/views/user/home/home_screen.dart';
 import 'package:gym/views/user/main/main_screen.dart';
@@ -22,16 +22,23 @@ import 'package:gym/views/notifications/notifications_screen.dart';
 import 'package:gym/views/settings/shop_screen.dart';
 import 'package:gym/views/settings/about_gym_screen.dart';
 import 'package:gym/views/settings/contact_us_screen.dart';
-import 'package:gym/views/settings/privacy_policy_screen.dart';
+import 'package:gym/views/settings/policy_screen.dart';
+import 'package:gym/utils/constants/policies.dart';
 import 'package:gym/views/trainer/main/trainer_main_screen.dart';
 import 'package:gym/views/trainer/profile/trainer_edit_profile_screen.dart';
 import 'package:gym/views/trainer/profile/trainer_change_password_screen.dart';
-import 'package:gym/views/trainer/profile/trainer_notification_settings_screen.dart';
-import 'package:gym/views/trainer/profile/trainer_privacy_settings_screen.dart';
+import 'package:gym/views/trainer/profile/trainer_profile_screen.dart';
 import 'package:gym/views/trainer/customers/customer_details_screen.dart';
 import 'package:gym/views/trainer/diet/diet_management_screen.dart';
 import 'package:gym/views/trainer/diet/add_food_screen.dart';
 import 'package:gym/views/trainer/diet/assign_diet_screen.dart';
+import 'package:gym/views/trainer/workouts/workouts_screen.dart';
+import 'package:gym/views/trainer/workouts/assign_workout_screen.dart';
+import 'package:gym/providers/assign_workout_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:gym/views/trainer/workouts/workout_add_edit_screen.dart';
+import 'package:gym/views/trainer/customers/customer_add_edit_screen.dart';
+import 'package:gym/models/workout_model.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey =
@@ -75,23 +82,19 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.trainerEditProfile,
-      builder: (context, state) => const TrainerEditProfileScreen(),
+      builder: (context, state) => TrainerEditProfileScreen(
+        trainer: state.extra as TrainerDetailModel?,
+      ),
     ),
     GoRoute(
       path: AppRoutes.trainerChangePassword,
       builder: (context, state) => const TrainerChangePasswordScreen(),
     ),
     GoRoute(
-      path: AppRoutes.trainerNotificationSettings,
-      builder: (context, state) => const TrainerNotificationSettingsScreen(),
-    ),
-    GoRoute(
-      path: AppRoutes.trainerPrivacySettings,
-      builder: (context, state) => const TrainerPrivacySettingsScreen(),
-    ),
-    GoRoute(
       path: AppRoutes.trainerCustomerDetails,
-      builder: (context, state) => const CustomerDetailsScreen(),
+      builder: (context, state) => CustomerDetailsScreen(
+        customerId: state.extra as int,
+      ),
     ),
     GoRoute(
       path: AppRoutes.trainerDiet,
@@ -104,6 +107,29 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.trainerAssignDiet,
       builder: (context, state) => const AssignDietScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerWorkouts,
+      builder: (context, state) => const WorkoutsScreen(),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerAssignWorkout,
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => AssignWorkoutProvider(),
+        child: const AssignWorkoutScreen(),
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerWorkoutAddEdit,
+      builder: (context, state) => WorkoutAddEditScreen(
+        workout: state.extra as WorkoutModel?,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerCustomerAddEdit,
+      builder: (context, state) => CustomerAddEditScreen(
+        customer: state.extra as MemberDetailModel?,
+      ),
     ),
 
     // Shell Route for Bottom Navigation Bar
@@ -183,7 +209,9 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.editProfile,
-      builder: (context, state) => const EditProfileScreen(),
+      builder: (context, state) => EditProfileScreen(
+        member: state.extra as MemberDetailModel?,
+      ),
     ),
     GoRoute(
       path: AppRoutes.shop,
@@ -199,11 +227,38 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.privacyPolicy,
-      builder: (context, state) => const PrivacyPolicyScreen(),
+      builder: (context, state) => const PolicyScreen(
+        title: 'Privacy Policy',
+        content: GymPolicies.privacyPolicy,
+      ),
     ),
     GoRoute(
       path: AppRoutes.terms,
-      builder: (context, state) => const TermsConditionsScreen(),
+      builder: (context, state) => const PolicyScreen(
+        title: 'Terms & Conditions',
+        content: GymPolicies.termsAndConditions,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.disclaimer,
+      builder: (context, state) => const PolicyScreen(
+        title: 'Disclaimer',
+        content: GymPolicies.disclaimer,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.cancellationRefund,
+      builder: (context, state) => const PolicyScreen(
+        title: 'Cancellation & Refund',
+        content: GymPolicies.cancellationAndRefundPolicy,
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerPolicy,
+      builder: (context, state) => const PolicyScreen(
+        title: 'Trainer Policy',
+        content: GymPolicies.trainerPolicy,
+      ),
     ),
   ],
 );
