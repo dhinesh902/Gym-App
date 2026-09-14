@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/models/diet_model.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
-import 'package:gym/views/widgets/custom_elevated_button.dart';
 import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 
@@ -300,7 +299,7 @@ class _FoodListView extends StatelessWidget {
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
       itemCount: sessionFoods.length,
-      separatorBuilder: (_, __) => const SizedBox(height: 16),
+      separatorBuilder: (_, _) => const SizedBox(height: 16),
       itemBuilder: (context, index) {
         final food = sessionFoods[index];
         final isSelected = selectedFoods.contains(food);

@@ -233,21 +233,37 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ]),
                     const SizedBox(height: 40),
-                    CustomElevatedButton(
-                      onPressed: () => context.go(AppRoutes.login),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.logout_rounded),
-                          SizedBox(width: 8),
-                          Text(
-                            'Log Out',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+                    Container(
+                      height: 55,
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: AppColors.error.withValues(alpha: 0.1),
+                        border: Border.all(
+                          color: AppColors.error.withValues(alpha: 0.3),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: TextButton.icon(
+                        onPressed: () {},
+                        icon: const Icon(
+                          Icons.logout_rounded,
+                          color: AppColors.error,
+                          size: 22,
+                        ),
+                        label: const Text(
+                          'Log Out',
+                          style: TextStyle(
+                            color: AppColors.accent,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w800,
                           ),
-                        ],
+                        ),
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 40),

@@ -12,7 +12,7 @@ class DietScreen extends StatelessWidget {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          CustomSliverAppBar(title: "Today\'s Diet"),
+          CustomSliverAppBar(title: "Today's Diet"),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(

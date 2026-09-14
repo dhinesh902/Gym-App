@@ -13,7 +13,7 @@ class TrainerChangePasswordScreen extends StatelessWidget {
       backgroundColor: AppColors.background,
       appBar: const CustomAppBar(title: 'Change Password'),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
         physics: const BouncingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,7 +50,9 @@ class TrainerChangePasswordScreen extends StatelessWidget {
                     offset: const Offset(0, 8),
                   ),
                 ],
-                border: Border.all(color: AppColors.border.withValues(alpha: 0.5)),
+                border: Border.all(
+                  color: AppColors.border.withValues(alpha: 0.5),
+                ),
               ),
               child: Column(
                 children: [
@@ -78,27 +80,14 @@ class TrainerChangePasswordScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 40),
-            Container(
-              height: 65,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: const LinearGradient(
-                  colors: [AppColors.secondary, AppColors.primary],
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.3),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
-                  ),
-                ],
-              ),
-              child: CustomElevatedButton(
-                onPressed: () {},
-                child: const Text(
-                  'Update Password',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800, color: Colors.white),
+            CustomElevatedButton(
+              onPressed: () {},
+              child: const Text(
+                'Update Password',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
               ),
             ),

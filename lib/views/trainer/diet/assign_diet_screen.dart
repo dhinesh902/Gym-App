@@ -150,10 +150,10 @@ class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
               if (textEditingValue.text.isEmpty) {
                 return const Iterable<String>.empty();
               }
-              final List<String> _allMembers = [
+              final List<String> allMembers = [
                 'Alex Johnson', 'Sarah Smith', 'Michael Brown', 'Emily Davis', 'Chris Wilson', 'David Clark', 'John Doe'
               ];
-              return _allMembers.where((member) =>
+              return allMembers.where((member) =>
                   member.toLowerCase().contains(textEditingValue.text.toLowerCase()) &&
                   !_selectedCustomers.contains(member));
             },

@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 class AuthSelectionScreen extends StatelessWidget {
   const AuthSelectionScreen({super.key});
@@ -16,6 +17,7 @@ class AuthSelectionScreen extends StatelessWidget {
       child: Scaffold(
         body: Stack(
           children: [
+            // Background Image with Ken Burns effect illusion (static here, but high quality)
             Positioned.fill(
               child: Image.network(
                 "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1470&auto=format&fit=crop",
@@ -23,18 +25,19 @@ class AuthSelectionScreen extends StatelessWidget {
               ),
             ),
 
+            // Premium Dark Gradient Overlay
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.black.withValues(alpha: 0.1),
-                      AppColors.black.withValues(alpha: 0.6),
-                      AppColors.black.withValues(alpha: 0.95),
+                      AppColors.black.withValues(alpha: 0.2),
+                      AppColors.black.withValues(alpha: 0.7),
+                      AppColors.black.withValues(alpha: 1.0),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    stops: const [0.0, 0.5, 1.0],
+                    stops: const [0.0, 0.4, 1.0],
                   ),
                 ),
               ),
@@ -43,60 +46,86 @@ class AuthSelectionScreen extends StatelessWidget {
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 15.0,
-                  vertical: 15.0,
+                  horizontal: 24.0,
+                  vertical: 20.0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
+                    // Brand Icon & Badge
                     Align(
                       alignment: Alignment.topLeft,
                       child: Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.surface.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: AppColors.surface.withValues(alpha: 0.2),
-                            width: 1,
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Colors.white.withValues(alpha: 0.15),
+                              Colors.white.withValues(alpha: 0.05),
+                            ],
                           ),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.2),
+                              blurRadius: 20,
+                              spreadRadius: 5,
+                            ),
+                          ],
                         ),
                         child: const Icon(
                           Icons.fitness_center_rounded,
                           color: Colors.white,
-                          size: 32,
+                          size: 36,
                         ),
                       ),
                     ),
 
                     const Spacer(),
 
+                    // Hero Typography
                     Text(
                       'Push Your\nLimits',
                       style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                        color: AppColors.surface,
-                        fontWeight: FontWeight.bold,
-                        height: 1.1,
-                        letterSpacing: -1.5,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        height: 1.0,
+                        letterSpacing: -2.0,
+                        fontSize: 56,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black.withValues(alpha: 0.5),
+                            blurRadius: 20,
+                            offset: const Offset(0, 10),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 16),
                     Text(
                       'Join the elite fitness community. Train hard, track your progress, and achieve greatness.',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.surface.withValues(alpha: 0.7),
-                        height: 1.5,
+                        color: Colors.white.withValues(alpha: 0.75),
+                        height: 1.6,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
 
-                    const SizedBox(height: 48),
+                    const SizedBox(height: 50),
 
-                    // Login Button
+                    // Primary Login Button (Premium Gradient)
                     CustomElevatedButton(
                       onPressed: () {
                         context.push(AppRoutes.login);
                       },
-                      child: const Text(
+                      child: Text(
                         'Log In to Account',
                         style: TextStyle(
                           fontSize: 16,
@@ -105,44 +134,42 @@ class AuthSelectionScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    const SizedBox(height: 20),
 
-                    const SizedBox(height: 16),
-
-                    // Register Button with Glassmorphism
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                        child: OutlinedButton(
-                          onPressed: () {
+                    // Enhanced LiquidGlass Layer for Create Account
+                    LiquidGlassLayer(
+                      child: LiquidGlass(
+                        shape: LiquidRoundedSuperellipse(borderRadius: 10),
+                        child: InkWell(
+                          onTap: () {
                             context.push(AppRoutes.register);
                           },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            side: BorderSide(
-                              color: AppColors.surface.withValues(alpha: 0.5),
-                              width: 1.5,
-                            ),
-                            backgroundColor: AppColors.surface.withValues(
-                              alpha: 0.1,
-                            ),
-                            shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Container(
+                            height: 55,
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                width: 1.5,
+                              ),
                               borderRadius: BorderRadius.circular(10),
                             ),
-                          ),
-                          child: const Text(
-                            'Create New Account',
-                            style: TextStyle(
-                              color: AppColors.surface,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w800,
-                              letterSpacing: 0.5,
+                            alignment: Alignment.center,
+                            child: const Text(
+                              'Create New Account',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
+
+                    const SizedBox(height: 40),
                   ],
                 ),
               ),

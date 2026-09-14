@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
@@ -287,13 +286,13 @@ class TrainerProfileScreen extends StatelessWidget {
 
                   // Logout Button
                   Container(
-                    height: 60,
+                    height: 55,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: AppColors.accent.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(10),
+                      color: AppColors.error.withValues(alpha: 0.1),
                       border: Border.all(
-                        color: AppColors.accent.withValues(alpha: 0.3),
+                        color: AppColors.error.withValues(alpha: 0.3),
                         width: 1.5,
                       ),
                     ),
@@ -301,20 +300,20 @@ class TrainerProfileScreen extends StatelessWidget {
                       onPressed: () {},
                       icon: const Icon(
                         Icons.logout_rounded,
-                        color: AppColors.accent,
+                        color: AppColors.error,
                         size: 22,
                       ),
                       label: const Text(
                         'Log Out',
                         style: TextStyle(
-                          color: AppColors.accent,
+                          color: AppColors.error,
                           fontSize: 16,
                           fontWeight: FontWeight.w800,
                         ),
                       ),
                       style: TextButton.styleFrom(
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(10),
                         ),
                       ),
                     ),

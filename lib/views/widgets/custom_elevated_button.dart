@@ -25,12 +25,11 @@ class CustomElevatedButton extends StatelessWidget {
        child = null;
 
   ButtonStyle get _buttonStyle => ElevatedButton.styleFrom(
-    backgroundColor: AppColors.primary,
-    foregroundColor: Colors.white,
-    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    backgroundColor: Colors.transparent,
+    foregroundColor: AppColors.surface,
     elevation: 0,
-    minimumSize: Size(double.maxFinite, 48),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+    minimumSize: Size(double.maxFinite, 55),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
   );
 
   @override
@@ -44,10 +43,18 @@ class CustomElevatedButton extends StatelessWidget {
       );
     }
 
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: _buttonStyle,
-      child: child!,
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        gradient: LinearGradient(
+          colors: [AppColors.secondary, AppColors.primary],
+        ),
+      ),
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: _buttonStyle,
+        child: child!,
+      ),
     );
   }
 }

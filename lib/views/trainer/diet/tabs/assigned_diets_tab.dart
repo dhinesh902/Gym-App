@@ -6,31 +6,88 @@ class AssignedDietsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Map<String, dynamic>> assignedDataList = [
+      {
+        'name': 'Alex Johnson',
+        'planName': 'Weight Loss Plan',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100',
+        'isActive': true,
+        'calories': '2100',
+        'protein': '140',
+        'water': '3.0',
+        'startDate': '12 Aug, 2026',
+      },
+      {
+        'name': 'Sarah Smith',
+        'planName': 'Muscle Gain Plan',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100',
+        'isActive': true,
+        'calories': '2800',
+        'protein': '180',
+        'water': '4.0',
+        'startDate': '10 Aug, 2026',
+      },
+      {
+        'name': 'Michael Brown',
+        'planName': 'Endurance Prep',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100',
+        'isActive': false,
+        'calories': '2400',
+        'protein': '120',
+        'water': '3.5',
+        'startDate': '01 Jul, 2026',
+      },
+      {
+        'name': 'Emily Davis',
+        'planName': 'Toning Plan',
+        'imageUrl':
+            'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=100',
+        'isActive': false,
+        'calories': '1800',
+        'protein': '110',
+        'water': '2.5',
+        'startDate': '15 Jun, 2026',
+      },
+    ];
+
+    if (assignedDataList.isEmpty) {
+      return const Center(
+        child: Text(
+          'No assigned diets found.',
+          style: TextStyle(color: AppColors.textLight, fontSize: 16),
+        ),
+      );
+    }
+
     return ListView.separated(
       physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-      itemCount: 4,
-      separatorBuilder: (_, _) => const SizedBox(height: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 20),
+      itemCount: assignedDataList.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
-        final isActive = index < 2;
-        return _AssignedDietCard(isActive: isActive, index: index);
+        final data = assignedDataList[index];
+        return _AssignedDietCard(data: data);
       },
     );
   }
 }
 
 class _AssignedDietCard extends StatelessWidget {
-  final bool isActive;
-  final int index;
+  final Map<String, dynamic> data;
 
-  const _AssignedDietCard({required this.isActive, required this.index});
+  const _AssignedDietCard({required this.data});
 
   @override
   Widget build(BuildContext context) {
+    final bool isActive = data['isActive'] as bool;
+
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
-        borderRadius: BorderRadius.circular(28),
+        borderRadius: BorderRadius.circular(25),
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.04),
@@ -62,11 +119,7 @@ class _AssignedDietCard extends StatelessWidget {
                   ),
                   child: CircleAvatar(
                     radius: 26,
-                    backgroundImage: NetworkImage(
-                      index % 2 == 0
-                          ? 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100'
-                          : 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100',
-                    ),
+                    backgroundImage: NetworkImage(data['imageUrl']),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -75,7 +128,7 @@ class _AssignedDietCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        index % 2 == 0 ? 'Alex Johnson' : 'Sarah Smith',
+                        data['name'],
                         style: const TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 18,
@@ -87,9 +140,7 @@ class _AssignedDietCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        index % 2 == 0
-                            ? 'Weight Loss Plan'
-                            : 'Muscle Gain Plan',
+                        data['planName'],
                         style: const TextStyle(
                           color: AppColors.textLight,
                           fontSize: 14,
@@ -143,7 +194,7 @@ class _AssignedDietCard extends StatelessWidget {
                   child: _StatColumn(
                     icon: Icons.local_fire_department_rounded,
                     label: 'Calories',
-                    value: '2100',
+                    value: data['calories'],
                     unit: 'kcal',
                     color: AppColors.accent,
                   ),
@@ -157,7 +208,7 @@ class _AssignedDietCard extends StatelessWidget {
                   child: _StatColumn(
                     icon: Icons.egg_alt_rounded,
                     label: 'Protein',
-                    value: '140',
+                    value: data['protein'],
                     unit: 'g',
                     color: AppColors.primary,
                   ),
@@ -171,7 +222,7 @@ class _AssignedDietCard extends StatelessWidget {
                   child: _StatColumn(
                     icon: Icons.water_drop_rounded,
                     label: 'Water',
-                    value: '3.0',
+                    value: data['water'],
                     unit: 'L',
                     color: AppColors.lightBlue,
                   ),
@@ -194,7 +245,7 @@ class _AssignedDietCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Started: 12 Aug, 2026',
+                  'Started: ${data['startDate']}',
                   style: TextStyle(
                     color: AppColors.textLight.withValues(alpha: 0.8),
                     fontSize: 13,
@@ -216,25 +267,23 @@ class _AssignedDietCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          gradient: LinearGradient(
+                            colors: [AppColors.secondary, AppColors.primary],
+                          ),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                      child: const Text(
-                        'View Plan',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w800,
-                          fontSize: 14,
+                        child: const Text(
+                          'View Plan',
+                          style: TextStyle(
+                            color: AppColors.surface,
+                            fontWeight: FontWeight.w800,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),

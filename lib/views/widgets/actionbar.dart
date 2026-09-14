@@ -5,93 +5,129 @@ import 'package:gym/utils/constants/colors.dart';
 class CustomSliverAppBar extends StatelessWidget {
   final String title;
   final List<Widget>? actions;
+  final double expandedHeight;
 
-  const CustomSliverAppBar({super.key, required this.title, this.actions});
+  const CustomSliverAppBar({
+    super.key,
+    required this.title,
+    this.actions,
+    this.expandedHeight = 120.0,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 90.0,
+      expandedHeight: expandedHeight,
       floating: false,
       pinned: true,
       elevation: 0,
-      backgroundColor: Colors.transparent,
       automaticallyImplyLeading: false,
       flexibleSpace: ClipRect(
         child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+          filter: ImageFilter.blur(sigmaX: 25, sigmaY: 25),
           child: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  AppColors.primary.withValues(alpha: 0.85),
-                  AppColors.secondary.withValues(alpha: 0.75),
-                  AppColors.accent.withValues(alpha: 0.65),
+                  AppColors.background.withValues(alpha: 0.9),
+                  AppColors.surface.withValues(alpha: 0.8),
                 ],
               ),
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.white.withValues(alpha: 0.2),
-                  width: 1.5,
+                  color: AppColors.surface.withValues(alpha: 0.1),
+                  width: 1.0,
                 ),
               ),
             ),
-            child: FlexibleSpaceBar(
-              titlePadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              title: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 22,
-                  letterSpacing: -0.5,
-                  shadows: [
-                    Shadow(
-                      color: Colors.black26,
-                      blurRadius: 8,
-                      offset: Offset(0, 2),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: -30,
+                  top: -20,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.primary.withValues(alpha: 0.15),
                     ),
-                  ],
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40),
+                      child: Container(color: Colors.transparent),
+                    ),
+                  ),
                 ),
-              ),
+                FlexibleSpaceBar(
+                  titlePadding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 16,
+                  ),
+                  title: Text(
+                    title,
+                    style: TextStyle(
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 20,
+                      letterSpacing: -0.8,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         ),
       ),
-      leadingWidth: 75,
+      leadingWidth: 80,
       leading: Navigator.canPop(context)
-        ? Center(
-            child: Container(
-              margin: const EdgeInsets.only(left: 20),
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.25),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+          ? Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    margin: const EdgeInsets.only(left: 20),
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.surface.withValues(alpha: 0.2),
+                        width: 1.5,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => Navigator.maybePop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_new_rounded,
+                        color: AppColors.surface,
+                        size: 20,
+                      ),
+                    ),
                   ),
-                ],
-                border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
-              ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => Navigator.maybePop(context),
-                icon: const Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  color: Colors.white,
-                  size: 20,
                 ),
               ),
-            ),
-          )
-        : null,
-      actions: actions,
+            )
+          : null,
+      actions: actions != null
+          ? [
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Row(children: actions!),
+              ),
+            ]
+          : null,
     );
   }
 }
@@ -103,7 +139,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key, this.title = "Shop", this.actions});
 
   @override
-  Size get preferredSize => const Size.fromHeight(65);
+  Size get preferredSize => const Size.fromHeight(70);
 
   @override
   Widget build(BuildContext context) {
@@ -111,17 +147,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       elevation: 0,
       centerTitle: true,
-      toolbarHeight: 65,
-      backgroundColor: AppColors.surface,
+      toolbarHeight: 70,
+      backgroundColor: Colors.transparent,
       flexibleSpace: ClipRect(
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 30, sigmaY: 30),
           child: Container(
             decoration: BoxDecoration(
-              color: AppColors.surface.withValues(alpha: 0.85),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  AppColors.primary.withValues(alpha: 0.95),
+                  AppColors.secondary.withValues(alpha: 0.85),
+                ],
+              ),
               border: Border(
                 bottom: BorderSide(
-                  color: AppColors.border.withValues(alpha: 0.4),
+                  color: AppColors.surface.withValues(alpha: 0.08),
                   width: 1.0,
                 ),
               ),
@@ -129,43 +172,55 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ),
-      leadingWidth: 70,
+      leadingWidth: 80,
       leading: Navigator.canPop(context)
-        ? Center(
-            child: Container(
-              margin: const EdgeInsets.only(left: 20),
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.border.withValues(alpha: 0.8),
-                  width: 1.5,
+          ? Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppColors.surface.withValues(alpha: 0.05),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: AppColors.surface.withValues(alpha: 0.15),
+                        width: 1.2,
+                      ),
+                    ),
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(
+                        Icons.arrow_back_ios_sharp,
+                        color: AppColors.surface,
+                        size: 18,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              child: IconButton(
-                padding: EdgeInsets.zero,
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(
-                  Icons.arrow_back_rounded,
-                  color: AppColors.textPrimary,
-                  size: 20,
-                ),
-              ),
-            ),
-          )
-        : null,
+            )
+          : null,
       title: Text(
         title,
         style: const TextStyle(
-          color: AppColors.textPrimary,
-          fontSize: 18,
+          color: AppColors.surface,
+          fontSize: 20,
           fontWeight: FontWeight.w800,
-          letterSpacing: 0.5,
+          letterSpacing: 0.3,
         ),
       ),
-      actions: actions,
+      actions: actions != null
+          ? [
+              Padding(
+                padding: const EdgeInsets.only(right: 12.0),
+                child: Row(children: actions!),
+              ),
+            ]
+          : null,
     );
   }
 }

@@ -59,7 +59,7 @@ class CustomTextField extends StatelessWidget {
         ),
         filled: true,
         errorStyle: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
-        fillColor: AppColors.background.withValues(alpha: 0.6),
+        fillColor: AppColors.background.withValues(alpha: 0.1),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppConstants.inputRadius),
           borderSide: BorderSide.none,

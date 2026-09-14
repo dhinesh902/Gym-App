@@ -256,8 +256,8 @@ class SummaryCard extends StatelessWidget {
           Text(
             count,
             style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
               color: isPrimary ? Colors.white : AppColors.textPrimary,
               letterSpacing: -1,
             ),

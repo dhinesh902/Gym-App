@@ -4,8 +4,9 @@ import 'dart:ui';
 import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/utils/constants/colors.dart';
-import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
+import 'package:gym/views/widgets/custom_text_field.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -21,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen>
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -39,13 +39,17 @@ class _LoginScreenState extends State<LoginScreen>
         backgroundColor: AppColors.background,
         body: Stack(
           children: [
+            // High-quality background image
             Positioned.fill(
               child: Image.network(
-                'https://www.shred.app/_next/image?url=https%3A%2F%2Fshred-website-assets.s3.us-east-1.amazonaws.com%2Fhero.png&w=2048&q=100',
+                'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1470&auto=format&fit=crop',
                 fit: BoxFit.cover,
+                colorBlendMode: BlendMode.darken,
+                color: Colors.black.withValues(alpha: 0.3),
               ),
             ),
 
+            // Deep Premium Gradient Overlay
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
@@ -53,9 +57,11 @@ class _LoginScreenState extends State<LoginScreen>
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                     colors: [
-                      AppColors.black.withValues(alpha: 0.3),
-                      AppColors.black.withValues(alpha: 0.8),
+                      AppColors.black.withValues(alpha: 0.1),
+                      AppColors.black.withValues(alpha: 0.85),
+                      AppColors.black.withValues(alpha: 1.0),
                     ],
+                    stops: const [0.0, 0.5, 1.0],
                   ),
                 ),
               ),
@@ -66,21 +72,23 @@ class _LoginScreenState extends State<LoginScreen>
               child: SafeArea(
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
-
+                    const SizedBox(height: 25),
                     // Premium Pill-shaped TabBar
                     Container(
-                      margin: const EdgeInsets.symmetric(horizontal: 15),
-                      padding: const EdgeInsets.all(4),
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.surface.withValues(alpha: 0.6),
+                        color: Colors.black.withValues(alpha: 0.4),
                         borderRadius: BorderRadius.circular(30),
-                        border: Border.all(color: Colors.white, width: 1.5),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          width: 1,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.black.withValues(alpha: 0.03),
-                            blurRadius: 10,
-                            offset: const Offset(0, 4),
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
                           ),
                         ],
                       ),
@@ -89,29 +97,36 @@ class _LoginScreenState extends State<LoginScreen>
                         indicatorSize: TabBarIndicatorSize.tab,
                         dividerColor: Colors.transparent,
                         indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(25),
+                          gradient: const LinearGradient(
+                            colors: [AppColors.accent, AppColors.primary],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppColors.primary.withValues(alpha: 0.3),
-                              blurRadius: 8,
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 10,
                               offset: const Offset(0, 4),
                             ),
                           ],
                         ),
                         labelColor: Colors.white,
-                        unselectedLabelColor: AppColors.black,
+                        unselectedLabelColor: Colors.white.withValues(
+                          alpha: 0.5,
+                        ),
                         labelStyle: const TextStyle(
-                          fontWeight: FontWeight.bold,
+                          fontWeight: FontWeight.w800,
                           fontSize: 15,
+                          letterSpacing: 0.5,
                         ),
                         unselectedLabelStyle: const TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 15,
                         ),
                         tabs: const [
-                          Tab(text: 'User Login'),
-                          Tab(text: 'Trainer Login'),
+                          Tab(text: 'Athlete'),
+                          Tab(text: 'Trainer'),
                         ],
                       ),
                     ),
@@ -138,7 +153,6 @@ class _LoginScreenState extends State<LoginScreen>
   }
 }
 
-// Extracted the form into its own independent widget
 class LoginFormWidget extends StatefulWidget {
   final bool isTrainer;
 
@@ -163,13 +177,13 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // Floating 3D-like Icon
+            // Floating 3D-like Icon with Pulse Glow
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: const EdgeInsets.all(28),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -179,17 +193,18 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.4),
-                    blurRadius: 25,
-                    offset: const Offset(0, 12),
+                    color: AppColors.primary.withValues(alpha: 0.5),
+                    blurRadius: 30,
+                    spreadRadius: 2,
+                    offset: const Offset(0, 10),
                   ),
                 ],
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  width: 2,
+                  color: Colors.white.withValues(alpha: 0.4),
+                  width: 1.5,
                 ),
               ),
-              child: Icon(icon, size: 52, color: AppColors.surface),
+              child: Icon(icon, size: 48, color: Colors.white),
             ),
             const SizedBox(height: 32),
 
@@ -197,45 +212,38 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
             Text(
               title,
               style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                color: AppColors.surface,
+                color: Colors.white,
                 fontWeight: FontWeight.w900,
-                letterSpacing: -1.2,
-                fontSize: 32,
+                letterSpacing: -1.0,
+                fontSize: 36,
               ),
             ),
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
             Text(
               subtitle,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: AppColors.secondary,
+                color: Colors.white.withValues(alpha: 0.7),
                 fontWeight: FontWeight.w500,
-                height: 1.4,
+                height: 1.5,
+                fontSize: 16,
               ),
             ),
-            const SizedBox(height: 40),
+            const SizedBox(height: 48),
 
             // Glass morphic Form Container
-            ClipRRect(
-              borderRadius: BorderRadius.circular(32),
-              child: BackdropFilter(
-                filter: ImageFilter.blur(sigmaX: 3, sigmaY: 3),
+            LiquidGlassLayer(
+              child: LiquidGlass(
+                shape: LiquidRoundedSuperellipse(borderRadius: 24),
                 child: Container(
-                  padding: const EdgeInsets.all(28),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: AppColors.surface.withValues(alpha: 0.25),
-                    borderRadius: BorderRadius.circular(32),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      width: 1.5,
+                      color: Colors.white.withValues(alpha: 0.15),
+                      width: 1,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.black.withValues(alpha: 0.05),
-                        blurRadius: 40,
-                        offset: const Offset(0, 20),
-                      ),
-                    ],
+                    borderRadius: BorderRadius.circular(24),
+                    color: Colors.black.withValues(alpha: 0.2),
                   ),
                   child: Form(
                     key: _formKey,
@@ -245,7 +253,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                         CustomTextField(
                           labelText: 'Email Address',
                           hintText: 'Enter your email',
-                          hintColor: AppColors.surface,
+                          hintColor: Colors.white70,
                           prefixIcon: Icons.email_outlined,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) =>
@@ -258,7 +266,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           labelText: 'Password',
                           hintText: 'Enter your password',
                           prefixIcon: Icons.lock_outline_rounded,
-                          hintColor: AppColors.surface,
+                          hintColor: Colors.white70,
                           obscureText: _obscurePassword,
                           validator: (value) =>
                               value == null || value.trim().isEmpty
@@ -269,7 +277,7 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                               _obscurePassword
                                   ? Icons.visibility_off_rounded
                                   : Icons.visibility_rounded,
-                              color: AppColors.textLight,
+                              color: Colors.white54,
                             ),
                             onPressed: () {
                               setState(() {
@@ -283,76 +291,45 @@ class _LoginFormWidgetState extends State<LoginFormWidget> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {},
-                            style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                            ),
                             child: const Text(
                               'Forgot Password?',
                               style: TextStyle(
                                 color: AppColors.primary,
-                                fontWeight: FontWeight.w700,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
                               ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+
+                        // Premium Gradient Button
+                        CustomElevatedButton(
+                          onPressed: () {
+                            if (widget.isTrainer) {
+                              context.go(AppRoutes.trainerHome);
+                            } else {
+                              context.go(AppRoutes.home);
+                            }
+                          },
+                          child: Text(
+                            "Sign In",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
                             ),
                           ),
                         ),
                         const SizedBox(height: 24),
 
-                        // Premium Gradient Button
-                        Container(
-                          height: 60,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              AppConstants.buttonRadius,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.3),
-                                blurRadius: 20,
-                                offset: const Offset(0, 10),
-                              ),
-                            ],
-                            gradient: const LinearGradient(
-                              colors: [AppColors.accent, AppColors.primary],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                          ),
-                          child: CustomElevatedButton(
-                            onPressed: () {
-                              // if (_formKey.currentState?.validate() ?? false) {
-                              //
-                              // }
-                              if (widget.isTrainer) {
-                                context.go(AppRoutes.trainerHome);
-                              } else {
-                                context.go(AppRoutes.home);
-                              }
-                            },
-                            child: const Text(
-                              'Sign In',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.0,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text(
+                            Text(
                               "Don't have an account? ",
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppColors.surface,
+                                color: Colors.white.withValues(alpha: 0.7),
                                 fontWeight: FontWeight.w500,
                               ),
                             ),

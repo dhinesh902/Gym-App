@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
-import 'dart:ui';
 
 class CustomerDetailsScreen extends StatelessWidget {
   const CustomerDetailsScreen({super.key});

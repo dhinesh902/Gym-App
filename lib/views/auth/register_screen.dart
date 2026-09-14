@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:go_router/go_router.dart';
 import 'package:gym/utils/constants/colors.dart';
-import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
+import 'package:gym/views/widgets/custom_text_field.dart';
+import 'package:liquid_glass_renderer/liquid_glass_renderer.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -19,7 +21,6 @@ class _RegisterScreenState extends State<RegisterScreen>
   @override
   void initState() {
     super.initState();
-
     _tabController = TabController(length: 2, vsync: this);
   }
 
@@ -31,106 +32,123 @@ class _RegisterScreenState extends State<RegisterScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // Gym Background Image
-          Positioned.fill(
-            child: Image.network(
-              'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1470&auto=format&fit=crop',
-              fit: BoxFit.cover,
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            // High-quality background image
+            Positioned.fill(
+              child: Image.network(
+                'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=1470&auto=format&fit=crop',
+                fit: BoxFit.cover,
+                colorBlendMode: BlendMode.darken,
+                color: Colors.black.withValues(alpha: 0.3),
+              ),
             ),
-          ),
-          // Dark Gradient Overlay for professional look and readability
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withValues(alpha: 0.3),
-                    Colors.black.withValues(alpha: 0.8),
+
+            // Deep Premium Gradient Overlay
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      AppColors.black.withValues(alpha: 0.1),
+                      AppColors.black.withValues(alpha: 0.85),
+                      AppColors.black.withValues(alpha: 1.0),
+                    ],
+                    stops: const [0.0, 0.4, 1.0],
+                  ),
+                ),
+              ),
+            ),
+
+            // Main content
+            Positioned.fill(
+              child: SafeArea(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 25),
+                    // Premium Pill-shaped TabBar
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 24),
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.15),
+                          width: 1,
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 15,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: TabBar(
+                        controller: _tabController,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        dividerColor: Colors.transparent,
+                        indicator: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          gradient: const LinearGradient(
+                            colors: [AppColors.accent, AppColors.primary],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppColors.primary.withValues(alpha: 0.4),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        labelColor: Colors.white,
+                        unselectedLabelColor: Colors.white.withValues(
+                          alpha: 0.5,
+                        ),
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.w800,
+                          fontSize: 15,
+                          letterSpacing: 0.5,
+                        ),
+                        unselectedLabelStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 15,
+                        ),
+                        tabs: const [
+                          Tab(text: 'Athlete'),
+                          Tab(text: 'Trainer'),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Forms
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabController,
+                        physics: const BouncingScrollPhysics(),
+                        children: const [
+                          RegisterFormWidget(isTrainer: false),
+                          RegisterFormWidget(isTrainer: true),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-
-          // Main content
-          Positioned.fill(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-
-                  // Tab Bar
-                  Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 15),
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: Colors.white, width: 1.5),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.03),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: TabBar(
-                      controller: _tabController,
-                      indicatorSize: TabBarIndicatorSize.tab,
-                      dividerColor: Colors.transparent,
-                      indicator: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        color: AppColors.primary,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      labelColor: Colors.white,
-                      unselectedLabelColor: AppColors.textPrimary,
-                      labelStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
-                      ),
-                      unselectedLabelStyle: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                      ),
-                      tabs: const [
-                        Tab(text: 'User Sign Up'),
-                        Tab(text: 'Trainer Sign Up'),
-                      ],
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Forms
-                  Expanded(
-                    child: TabBarView(
-                      controller: _tabController,
-                      physics: const BouncingScrollPhysics(),
-                      children: const [
-                        RegisterFormWidget(isTrainer: false),
-                        RegisterFormWidget(isTrainer: true),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -165,32 +183,34 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
       child: SingleChildScrollView(
         physics: const BouncingScrollPhysics(),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 30.0),
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // Floating 3D-like Icon with Pulse Glow
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(28),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [AppColors.secondary, AppColors.primary],
+                    colors: [AppColors.accent, AppColors.primary],
                   ),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.4),
-                      blurRadius: 25,
-                      offset: const Offset(0, 12),
+                      color: AppColors.primary.withValues(alpha: 0.5),
+                      blurRadius: 30,
+                      spreadRadius: 2,
+                      offset: const Offset(0, 10),
                     ),
                   ],
                   border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.5),
-                    width: 2,
+                    color: Colors.white.withValues(alpha: 0.4),
+                    width: 1.5,
                   ),
                 ),
-                child: Icon(icon, size: 52, color: AppColors.surface),
+                child: Icon(icon, size: 48, color: Colors.white),
               ),
               const SizedBox(height: 32),
 
@@ -198,46 +218,37 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
               Text(
                 title,
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                  color: AppColors.surface,
-                  // changed to surface since bg is dark
+                  color: Colors.white,
                   fontWeight: FontWeight.w900,
-                  letterSpacing: -1.2,
-                  fontSize: 32,
+                  letterSpacing: -1.0,
+                  fontSize: 36,
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               Text(
                 subtitle,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white70, // adjusted for dark bg
+                  color: Colors.white.withValues(alpha: 0.7),
                   fontWeight: FontWeight.w500,
-                  height: 1.4,
+                  height: 1.5,
+                  fontSize: 16,
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 48),
 
-              // Glassmorphic Form Container
-              ClipRRect(
-                borderRadius: BorderRadius.circular(32),
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+              LiquidGlassLayer(
+                child: LiquidGlass(
+                  shape: LiquidRoundedSuperellipse(borderRadius: 24),
                   child: Container(
-                    padding: const EdgeInsets.all(24),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.surface.withValues(alpha: 0.25),
-                      borderRadius: BorderRadius.circular(32),
                       border: Border.all(
-                        color: Colors.white.withValues(alpha: 0.4),
-                        width: 1.5,
+                        color: Colors.white.withValues(alpha: 0.15),
+                        width: 1,
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 40,
-                          offset: const Offset(0, 20),
-                        ),
-                      ],
+                      borderRadius: BorderRadius.circular(24),
+                      color: Colors.black.withValues(alpha: 0.2),
                     ),
                     child: Form(
                       key: _formKey,
@@ -247,6 +258,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Full Name',
                             hintText: 'Enter your full name',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.person_outline,
                             keyboardType: TextInputType.name,
                             validator: (value) =>
@@ -258,6 +270,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Date of Birth / Age',
                             hintText: 'Enter your DOB or age',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.calendar_today_outlined,
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
@@ -268,6 +281,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Gender',
                             hintText: 'Enter your gender',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.transgender_outlined,
                             validator: (value) =>
                                 value == null || value.trim().isEmpty
@@ -278,6 +292,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Phone Number',
                             hintText: 'Enter your phone number',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.phone_outlined,
                             keyboardType: TextInputType.phone,
                             validator: (value) =>
@@ -289,6 +304,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Email Address',
                             hintText: 'Enter your email',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
                             validator: (value) =>
@@ -302,6 +318,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                             CustomTextField(
                               labelText: 'Height',
                               hintText: 'Enter your height',
+                              hintColor: Colors.white70,
                               prefixIcon: Icons.height_outlined,
                               validator: (value) =>
                                   value == null || value.trim().isEmpty
@@ -312,6 +329,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                             CustomTextField(
                               labelText: 'Weight',
                               hintText: 'Enter your weight',
+                              hintColor: Colors.white70,
                               prefixIcon: Icons.monitor_weight_outlined,
                               validator: (value) =>
                                   value == null || value.trim().isEmpty
@@ -322,6 +340,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                             CustomTextField(
                               labelText: 'Fitness Goal',
                               hintText: 'Enter your fitness goal',
+                              hintColor: Colors.white70,
                               prefixIcon: Icons.flag_outlined,
                               validator: (value) =>
                                   value == null || value.trim().isEmpty
@@ -332,6 +351,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                             CustomTextField(
                               labelText: 'Address',
                               hintText: 'Enter your address',
+                              hintColor: Colors.white70,
                               prefixIcon: Icons.location_on_outlined,
                               maxLines: 2,
                               validator: (value) =>
@@ -345,6 +365,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Password',
                             hintText: 'Create a password',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.lock_outline_rounded,
                             obscureText: _obscurePassword,
                             validator: (value) =>
@@ -356,7 +377,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                                 _obscurePassword
                                     ? Icons.visibility_off_rounded
                                     : Icons.visibility_rounded,
-                                color: AppColors.textLight,
+                                color: Colors.white54,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -369,6 +390,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           CustomTextField(
                             labelText: 'Confirm Password',
                             hintText: 'Re-enter your password',
+                            hintColor: Colors.white70,
                             prefixIcon: Icons.lock_reset_rounded,
                             obscureText: _obscureConfirmPassword,
                             validator: (value) =>
@@ -380,7 +402,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                                 _obscureConfirmPassword
                                     ? Icons.visibility_off_rounded
                                     : Icons.visibility_rounded,
-                                color: AppColors.textLight,
+                                color: Colors.white54,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -393,59 +415,31 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                           const SizedBox(height: 32),
 
                           // Premium Gradient Button
-                          Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                AppConstants.buttonRadius,
-                              ),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  blurRadius: 20,
-                                  offset: const Offset(0, 10),
-                                ),
-                              ],
-                              gradient: const LinearGradient(
-                                colors: [
-                                  AppColors.secondary,
-                                  AppColors.primary,
-                                ],
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                              ),
-                            ),
-                            child: CustomElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState?.validate() ??
-                                    false) {
-                                  // Registration Logic
-                                }
-                              },
-                              child: const Text(
-                                'Create Account',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.0,
-                                ),
+                          CustomElevatedButton(
+                            onPressed: () {
+                              if (_formKey.currentState?.validate() ?? false) {
+                                // Registration Logic
+                              }
+                            },
+                            child: Text(
+                              "Create an Account",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w800,
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 24),
 
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
+                              Text(
                                 "Already have an account?",
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: AppColors.surface,
-                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white.withValues(alpha: 0.7),
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -458,7 +452,7 @@ class _RegisterFormWidgetState extends State<RegisterFormWidget> {
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: AppColors.primary,
-                                    fontWeight: FontWeight.w900,
+                                    fontWeight: FontWeight.w800,
                                   ),
                                 ),
                               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';

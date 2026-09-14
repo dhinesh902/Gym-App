@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/actionbar.dart';
-import 'dart:ui';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
 
 class TrainerEditProfileScreen extends StatelessWidget {
