@@ -126,35 +126,40 @@ class _PremiumHeader extends StatelessWidget {
           ),
 
           // Notification
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white.withValues(alpha: 0.14),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
-            ),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                const Icon(
-                  Icons.notifications_none_rounded,
-                  color: Colors.white,
-                  size: 23,
-                ),
-                Positioned(
-                  top: 9,
-                  right: 10,
-                  child: Container(
-                    width: 7,
-                    height: 7,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
+          GestureDetector(
+            onTap: () {
+              context.push(AppRoutes.trainerNotifications);
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white.withValues(alpha: 0.14),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+              ),
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Icon(
+                    Icons.notifications_none_rounded,
+                    color: Colors.white,
+                    size: 23,
+                  ),
+                  Positioned(
+                    top: 9,
+                    right: 10,
+                    child: Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
@@ -358,7 +363,9 @@ class _QuickActionsScroller extends StatelessWidget {
             title: 'Attendance',
             icon: Icons.qr_code_scanner_rounded,
             color: const Color(0xFF8B5CF6),
-            onTap: () {},
+            onTap: () {
+              context.push(AppRoutes.trainerAttendance);
+            },
           ),
         ],
       ),

@@ -11,6 +11,8 @@ import 'package:gym/providers/trainer_workouts_provider.dart';
 import 'package:gym/providers/register_provider.dart';
 import 'package:gym/providers/attendance_provider.dart';
 import 'package:gym/providers/trainer_schedule_provider.dart';
+import 'package:gym/providers/trainer_diet_provider.dart';
+import 'package:gym/providers/trainer_assigned_diets_provider.dart';
 import 'package:gym/controller/auth/auth_bloc.dart';
 import 'package:gym/service/trainer_service.dart';
 import 'package:gym/service/member_service.dart';
@@ -40,6 +42,8 @@ class GymApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RegisterProvider()),
         ChangeNotifierProvider(create: (_) => AttendanceProvider()),
         ChangeNotifierProvider(create: (_) => TrainerScheduleProvider()),
+        ChangeNotifierProvider(create: (_) => TrainerDietProvider()),
+        ChangeNotifierProvider(create: (_) => TrainerAssignedDietsProvider()),
       ],
       child: MaterialApp.router(
         title: 'Gym Management',

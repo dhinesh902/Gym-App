@@ -27,11 +27,11 @@ import 'package:gym/utils/constants/policies.dart';
 import 'package:gym/views/trainer/main/trainer_main_screen.dart';
 import 'package:gym/views/trainer/profile/trainer_edit_profile_screen.dart';
 import 'package:gym/views/trainer/profile/trainer_change_password_screen.dart';
-import 'package:gym/views/trainer/profile/trainer_profile_screen.dart';
 import 'package:gym/views/trainer/customers/customer_details_screen.dart';
 import 'package:gym/views/trainer/diet/diet_management_screen.dart';
 import 'package:gym/views/trainer/diet/add_food_screen.dart';
 import 'package:gym/views/trainer/diet/assign_diet_screen.dart';
+import 'package:gym/models/diet_model.dart';
 import 'package:gym/views/trainer/workouts/workouts_screen.dart';
 import 'package:gym/views/trainer/workouts/assign_workout_screen.dart';
 import 'package:gym/providers/assign_workout_provider.dart';
@@ -39,6 +39,9 @@ import 'package:provider/provider.dart';
 import 'package:gym/views/trainer/workouts/workout_add_edit_screen.dart';
 import 'package:gym/views/trainer/customers/customer_add_edit_screen.dart';
 import 'package:gym/models/workout_model.dart';
+import 'package:gym/views/trainer/attendance/trainer_attendance_screen.dart';
+import 'package:gym/providers/trainer_attendance_provider.dart';
+import 'package:gym/views/trainer/notifications/trainer_notifications_screen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorHomeKey =
@@ -106,7 +109,9 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: AppRoutes.trainerAssignDiet,
-      builder: (context, state) => const AssignDietScreen(),
+      builder: (context, state) => AssignDietScreen(
+        selectedDiets: state.extra as List<DietLibraryModel>?,
+      ),
     ),
     GoRoute(
       path: AppRoutes.trainerWorkouts,
@@ -130,6 +135,17 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => CustomerAddEditScreen(
         customer: state.extra as MemberDetailModel?,
       ),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerAttendance,
+      builder: (context, state) => ChangeNotifierProvider(
+        create: (_) => TrainerAttendanceProvider(),
+        child: const TrainerAttendanceScreen(),
+      ),
+    ),
+    GoRoute(
+      path: AppRoutes.trainerNotifications,
+      builder: (context, state) => const TrainerNotificationsScreen(),
     ),
 
     // Shell Route for Bottom Navigation Bar

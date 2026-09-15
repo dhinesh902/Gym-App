@@ -35,4 +35,6 @@ class AppRoutes {
   static const trainerWorkoutAddEdit = '/trainer-workout-add-edit';
   static const trainerCustomerAddEdit = '/trainer-customer-add-edit';
   static const trainerAssignWorkout = '/trainer-assign-workout';
+  static const trainerAttendance = '/trainer-attendance';
+  static const trainerNotifications = '/trainer-notifications';
 }

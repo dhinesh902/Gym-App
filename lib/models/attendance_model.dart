@@ -20,7 +20,7 @@ class AttendanceRecord {
   factory AttendanceRecord.fromJson(Map<String, dynamic> json) {
     return AttendanceRecord(
       id: json['id'] ?? 0,
-      memberId: json['memberId'] ?? 0,
+      memberId: json['memberId'] ?? json['trainerId'] ?? 0,
       date: json['date'] ?? '',
       checkInTime: json['checkInTime'] ?? '',
       checkOutTime: json['checkOutTime'],

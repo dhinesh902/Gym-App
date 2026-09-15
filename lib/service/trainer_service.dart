@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:gym/models/auth_models.dart';
 import 'package:gym/models/workout_model.dart';
+import 'package:gym/models/diet_model.dart';
+import 'package:gym/models/attendance_model.dart';
 import 'package:gym/service/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -270,6 +272,168 @@ class TrainerService extends ApiService {
   Future<void> deleteTrainerAssignment(int id) async {
     try {
       await dio.post('/workout-assignments/delete/$id');
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // Diet Management APIs
+  Future<DietListResponseModel> getDietsBySession(String session) async {
+    try {
+      final response = await dio.post(
+        '/diets/get',
+        data: {'session': session},
+      );
+      if (response.statusCode == 200) {
+        return DietListResponseModel.fromJson(response.data['data']);
+      }
+      throw 'Failed to fetch diets';
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> addDiet(Map<String, dynamic> data) async {
+    try {
+      await dio.post('/diets/add', data: data);
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> editDiet(int id, Map<String, dynamic> data) async {
+    try {
+      await dio.post('/diets/edit/$id', data: data);
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> deleteDiet(int id) async {
+    try {
+      await dio.post('/diets/delete/$id');
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  // Diet Assignment APIs
+  Future<void> assignDiets(AssignDietRequestModel request) async {
+    try {
+      await dio.post('/diet-assignments/assign', data: request.toJson());
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<DietAssignmentResponseModel> getTrainerDietAssignments(
+    int trainerId, {
+    int page = 1,
+    int limit = 30,
+  }) async {
+    try {
+      final response = await dio.post(
+        '/diet-assignments/trainer/$trainerId',
+        data: {
+          'page': page,
+          'limit': limit,
+        },
+      );
+      if (response.statusCode == 200) {
+        return DietAssignmentResponseModel.fromJson(response.data);
+      }
+      throw 'Failed to fetch diet assignments';
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> editDietAssignment(
+    int id, {
+    String? scheduledDate,
+    String? status,
+    String? notes,
+  }) async {
+    try {
+      final data = <String, dynamic>{};
+      if (scheduledDate != null) data['scheduledDate'] = scheduledDate;
+      if (status != null) data['status'] = status;
+      if (notes != null) data['notes'] = notes;
+
+      await dio.post('/diet-assignments/edit/$id', data: data);
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> deleteDietAssignment(int id) async {
+    try {
+      await dio.post('/diet-assignments/delete/$id');
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> checkInTrainer(int trainerId, String date, String checkInTime) async {
+    try {
+      final response = await dio.post('/trainer-attendance/check-in/add', data: {
+        'trainerId': trainerId,
+        'date': date,
+        'checkInTime': checkInTime,
+      });
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw 'Failed to check in';
+      }
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<void> checkOutTrainer(int trainerId, String date, String checkInTime, String checkOutTime) async {
+    try {
+      final response = await dio.post('/trainer-attendance/check-in/add', data: {
+        'trainerId': trainerId,
+        'date': date,
+        'checkInTime': checkInTime,
+        'checkOutTime': checkOutTime,
+      });
+      if (response.statusCode != 200 && response.statusCode != 201) {
+        throw 'Failed to check out';
+      }
+    } on DioException catch (e) {
+      throw handleError(e);
+    } catch (e) {
+      throw e.toString();
+    }
+  }
+
+  Future<AttendanceDataModel> getTrainerAttendance(int trainerId) async {
+    try {
+      final response = await dio.post('/trainer-attendance/trainer/$trainerId');
+      if (response.statusCode == 200 && response.data['data'] != null) {
+        return AttendanceDataModel.fromJson(response.data['data']);
+      }
+      throw 'Failed to fetch attendance history';
     } on DioException catch (e) {
       throw handleError(e);
     } catch (e) {

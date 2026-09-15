@@ -3,9 +3,71 @@ import 'package:gym/utils/constants/colors.dart';
 import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
+import 'package:provider/provider.dart';
+import 'package:gym/providers/trainer_diet_provider.dart';
+import 'package:go_router/go_router.dart';
 
-class AddFoodScreen extends StatelessWidget {
+class AddFoodScreen extends StatefulWidget {
   const AddFoodScreen({super.key});
+
+  @override
+  State<AddFoodScreen> createState() => _AddFoodScreenState();
+}
+
+class _AddFoodScreenState extends State<AddFoodScreen> {
+  final TextEditingController _foodNameController = TextEditingController();
+  final TextEditingController _amountController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+
+  String _selectedSession = 'Breakfast';
+  bool _isQuantity = true;
+
+  final List<String> _sessions = ['Breakfast', 'Lunch', 'Evening Snack', 'Dinner'];
+
+  Future<void> _submit() async {
+    final foodName = _foodNameController.text.trim();
+    final amountText = _amountController.text.trim();
+    final description = _descriptionController.text.trim();
+
+    if (foodName.isEmpty || amountText.isEmpty || description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    final amount = int.tryParse(amountText);
+    if (amount == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid amount')),
+      );
+      return;
+    }
+
+    final data = {
+      "session": _selectedSession.toLowerCase() ,
+      "foodName": foodName,
+      "isQuantity": _isQuantity,
+      "isGrams": !_isQuantity,
+      "quantity": _isQuantity ? amount : null,
+      "grams": !_isQuantity ? amount : null,
+      "description": description
+    };
+
+    final provider = context.read<TrainerDietProvider>();
+    final success = await provider.addDiet(data);
+    if (success && mounted) {
+      context.pop();
+    }
+  }
+
+  @override
+  void dispose() {
+    _foodNameController.dispose();
+    _amountController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,68 +84,102 @@ class AddFoodScreen extends StatelessWidget {
               title: 'Basic Details',
               icon: Icons.info_outline_rounded,
               children: [
-                const CustomTextField(
-                  hintText: 'Food Name',
+                DropdownButtonFormField<String>(
+                  value: _selectedSession,
+                  items: _sessions.map((session) {
+                    return DropdownMenuItem(value: session, child: Text(session));
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      setState(() {
+                        _selectedSession = value;
+                      });
+                    }
+                  },
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.wb_sunny_rounded, color: AppColors.primary),
+                    filled: true,
+                    fillColor: AppColors.surface,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(color: AppColors.border),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide(color: AppColors.border),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                CustomTextField(
+                  controller: _foodNameController,
+                  hintText: 'Food Name (e.g., Boiled Eggs)',
                   prefixIcon: Icons.fastfood_rounded,
-                ),
-                const SizedBox(height: 16),
-                const CustomTextField(
-                  hintText: 'Category (e.g., Protein, Carbs)',
-                  prefixIcon: Icons.category_rounded,
-                ),
-                const SizedBox(height: 16),
-                const CustomTextField(
-                  hintText: 'Serving Size (e.g., 100g, 1 cup)',
-                  prefixIcon: Icons.scale_rounded,
                 ),
               ],
             ),
             const SizedBox(height: 32),
             SectionCard(
-              title: 'Nutrition Facts (per serving)',
-              icon: Icons.pie_chart_outline_rounded,
+              title: 'Measurement',
+              icon: Icons.scale_rounded,
               children: [
                 Row(
                   children: [
-                    const Expanded(
-                      child: CustomTextField(
-                        hintText: 'Calories',
-                        prefixIcon: Icons.local_fire_department_rounded,
-                        keyboardType: TextInputType.number,
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () => setState(() => _isQuantity = true),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: _isQuantity ? AppColors.primary : AppColors.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: _isQuantity ? AppColors.primary : AppColors.border,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Quantity',
+                            style: TextStyle(
+                              color: _isQuantity ? AppColors.surface : AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: 12),
                     Expanded(
-                      child: CustomTextField(
-                        hintText: 'Protein (g)',
-                        prefixIcon: Icons.egg_alt_rounded,
-                        keyboardType: TextInputType.number,
-                        hintColor: AppColors.primary,
+                      child: GestureDetector(
+                        onTap: () => setState(() => _isQuantity = false),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: !_isQuantity ? AppColors.primary : AppColors.surface,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: !_isQuantity ? AppColors.primary : AppColors.border,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            'Grams',
+                            style: TextStyle(
+                              color: !_isQuantity ? AppColors.surface : AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: CustomTextField(
-                        hintText: 'Carbs (g)',
-                        prefixIcon: Icons.grass_rounded,
-                        keyboardType: TextInputType.number,
-                        hintColor: AppColors.lightBlue,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: CustomTextField(
-                        hintText: 'Fat (g)',
-                        prefixIcon: Icons.opacity_rounded,
-                        keyboardType: TextInputType.number,
-                        hintColor: Color(0xFFF59E0B),
-                      ),
-                    ),
-                  ],
+                CustomTextField(
+                  controller: _amountController,
+                  hintText: _isQuantity ? 'Enter Quantity (e.g., 2)' : 'Enter Grams (e.g., 100)',
+                  prefixIcon: Icons.numbers_rounded,
+                  keyboardType: TextInputType.number,
                 ),
               ],
             ),
@@ -92,15 +188,16 @@ class AddFoodScreen extends StatelessWidget {
               title: 'Extra Information',
               icon: Icons.description_outlined,
               children: [
-                const CustomTextField(hintText: 'Description', maxLines: 3),
-                const SizedBox(height: 16),
-                const CustomTextField(hintText: 'Health Benefits', maxLines: 3),
+                CustomTextField(
+                  controller: _descriptionController,
+                  hintText: 'Description',
+                  maxLines: 3,
+                ),
               ],
             ),
             const SizedBox(height: 48),
             CustomElevatedButton(
-              onPressed: () {
-              },
+              onPressed: _submit,
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 4),
                 child: Text(

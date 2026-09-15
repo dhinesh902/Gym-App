@@ -4,9 +4,43 @@ import 'package:gym/utils/snackbar_utils.dart';
 import 'package:gym/views/widgets/actionbar.dart';
 import 'package:gym/views/widgets/custom_text_field.dart';
 import 'package:gym/views/widgets/custom_elevated_button.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:gym/service/trainer_service.dart';
+import 'package:gym/models/diet_model.dart';
 
-class AssignDietScreen extends StatelessWidget {
-  const AssignDietScreen({super.key});
+import 'package:gym/models/auth_models.dart';
+
+class AssignDietScreen extends StatefulWidget {
+  final List<DietLibraryModel>? selectedDiets;
+
+  const AssignDietScreen({super.key, this.selectedDiets});
+
+  @override
+  State<AssignDietScreen> createState() => _AssignDietScreenState();
+}
+
+class _AssignDietScreenState extends State<AssignDietScreen> {
+  MemberSearchModel? _selectedMember;
+  bool _isSearchingMember = false;
+  final TextEditingController _notesController = TextEditingController();
+  TextEditingController? _internalMemberController;
+
+  @override
+  void dispose() {
+    _notesController.dispose();
+    super.dispose();
+  }
+
+  Future<List<MemberSearchModel>> _searchMembers(String query) async {
+    setState(() => _isSearchingMember = true);
+    try {
+      return await TrainerService().searchCustomers(query);
+    } catch (e) {
+      return [];
+    } finally {
+      setState(() => _isSearchingMember = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,25 +54,157 @@ class AssignDietScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SectionHeader(
-                title: 'Select Customer', icon: Icons.person_add_rounded),
+              title: 'Select Customer',
+              icon: Icons.person_add_rounded,
+            ),
             const SizedBox(height: 16),
-            const MultiCustomerSelector(),
+            Autocomplete<MemberSearchModel>(
+              displayStringForOption: (option) => option.fullname,
+              optionsBuilder: (TextEditingValue textEditingValue) async {
+                if (textEditingValue.text.isEmpty) {
+                  return const Iterable<MemberSearchModel>.empty();
+                }
+                return await _searchMembers(textEditingValue.text);
+              },
+              onSelected: (MemberSearchModel selection) {
+                setState(() {
+                  _selectedMember = selection;
+                });
+                Future.microtask(() {
+                  _internalMemberController?.clear();
+                });
+              },
+              fieldViewBuilder:
+                  (
+                    context,
+                    textEditingController,
+                    focusNode,
+                    onFieldSubmitted,
+                  ) {
+                    _internalMemberController = textEditingController;
+                    return CustomTextField(
+                      controller: textEditingController,
+                      focusNode: focusNode,
+                      hintText: 'Search member to assign...',
+                      prefixIcon: Icons.search_rounded,
+                      suffixIcon: _isSearchingMember
+                          ? const Padding(
+                              padding: EdgeInsets.all(12.0),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            )
+                          : null,
+                    );
+                  },
+              optionsViewBuilder: (context, onSelected, options) {
+                return Align(
+                  alignment: Alignment.topLeft,
+                  child: Material(
+                    elevation: 8,
+                    borderRadius: BorderRadius.circular(16),
+                    color: AppColors.surface,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width - 88,
+                      constraints: const BoxConstraints(maxHeight: 200),
+                      child: ListView.separated(
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                        itemCount: options.length,
+                        separatorBuilder: (context, index) => Divider(
+                          color: AppColors.border.withValues(alpha: 0.5),
+                          height: 1,
+                        ),
+                        itemBuilder: (context, index) {
+                          final option = options.elementAt(index);
+                          return ListTile(
+                            leading: CircleAvatar(
+                              backgroundImage: NetworkImage(
+                                option.profilephoto ??
+                                    'https://ui-avatars.com/api/?name=${option.fullname}',
+                              ),
+                            ),
+                            title: Text(
+                              option.fullname,
+                              style: const TextStyle(
+                                color: AppColors.textPrimary,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                            onTap: () => onSelected(option),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            if (_selectedMember != null) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: AppColors.primary.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 16,
+                          backgroundImage: NetworkImage(
+                            _selectedMember!.profilephoto ??
+                                'https://ui-avatars.com/api/?name=${_selectedMember!.fullname}',
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _selectedMember!.fullname,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.close_rounded,
+                        color: Colors.redAccent,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _selectedMember = null;
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 32),
 
             const SectionHeader(
-                title: 'Selected Foods', icon: Icons.restaurant_menu_rounded),
+              title: 'Selected Foods',
+              icon: Icons.restaurant_menu_rounded,
+            ),
             const SizedBox(height: 16),
-            _buildFoodList(),
+            _buildFoodList(widget.selectedDiets),
             const SizedBox(height: 32),
 
             const SectionHeader(
-                title: 'Daily Summary', icon: Icons.analytics_rounded),
-            const SizedBox(height: 16),
-            _buildSummary(),
-            const SizedBox(height: 32),
-
-            const SectionHeader(
-                title: 'Trainer Notes', icon: Icons.notes_rounded),
+              title: 'Trainer Notes',
+              icon: Icons.notes_rounded,
+            ),
             const SizedBox(height: 16),
             Container(
               decoration: BoxDecoration(
@@ -50,17 +216,61 @@ class AssignDietScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              child: const CustomTextField(
-                hintText: 'Add instructions (e.g. Drink 3L water daily, stay hydrated)',
+              child: CustomTextField(
+                controller: _notesController,
+                hintText:
+                    'Add instructions (e.g. Drink 3L water daily, stay hydrated)',
                 maxLines: 4,
               ),
             ),
             const SizedBox(height: 48),
 
             CustomElevatedButton(
-              onPressed: () {
-                SnackBarUtils.showSuccess('Diet plan assigned successfully!');
-                Navigator.pop(context);
+              onPressed: () async {
+                try {
+                  final prefs = await SharedPreferences.getInstance();
+                  final trainerId = prefs.getInt('userId') ?? 10;
+
+                  if (_selectedMember == null) {
+                    if (context.mounted)
+                      SnackBarUtils.showError('Please select a member');
+                    return;
+                  }
+
+                  final dietsPayload =
+                      widget.selectedDiets?.map((d) {
+                        return DietAssignmentItem(
+                          dietId: d.id,
+                          scheduledDate: DateTime.now().toString().split(
+                            ' ',
+                          )[0],
+                          status: 'pending',
+                          notes: _notesController.text.isNotEmpty
+                              ? _notesController.text
+                              : 'Assigned by Trainer',
+                        );
+                      }).toList() ??
+                      [];
+
+                  final request = AssignDietRequestModel(
+                    memberId: _selectedMember!.id,
+                    trainerId: trainerId,
+                    diets: dietsPayload,
+                  );
+
+                  await TrainerService().assignDiets(request);
+
+                  if (context.mounted) {
+                    SnackBarUtils.showSuccess(
+                      'Diet plan assigned successfully!',
+                    );
+                    Navigator.pop(context);
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    SnackBarUtils.showError(e.toString());
+                  }
+                }
               },
               child: const Padding(
                 padding: EdgeInsets.symmetric(vertical: 4),
@@ -116,7 +326,7 @@ class MultiCustomerSelector extends StatefulWidget {
 }
 
 class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
-  final List<String> _selectedCustomers = ['Alex Johnson', 'Sarah Smith'];
+  final List<String> _selectedCustomers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -143,11 +353,21 @@ class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
                 return const Iterable<String>.empty();
               }
               final List<String> allMembers = [
-                'Alex Johnson', 'Sarah Smith', 'Michael Brown', 'Emily Davis', 'Chris Wilson', 'David Clark', 'John Doe'
+                'Alex Johnson',
+                'Sarah Smith',
+                'Michael Brown',
+                'Emily Davis',
+                'Chris Wilson',
+                'David Clark',
+                'John Doe',
               ];
-              return allMembers.where((member) =>
-                  member.toLowerCase().contains(textEditingValue.text.toLowerCase()) &&
-                  !_selectedCustomers.contains(member));
+              return allMembers.where(
+                (member) =>
+                    member.toLowerCase().contains(
+                      textEditingValue.text.toLowerCase(),
+                    ) &&
+                    !_selectedCustomers.contains(member),
+              );
             },
             onSelected: (String selection) {
               setState(() {
@@ -156,14 +376,15 @@ class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
                 }
               });
             },
-            fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-              return CustomTextField(
-                controller: textEditingController,
-                focusNode: focusNode,
-                hintText: 'Search multiple members to assign...',
-                prefixIcon: Icons.search_rounded,
-              );
-            },
+            fieldViewBuilder:
+                (context, textEditingController, focusNode, onFieldSubmitted) {
+                  return CustomTextField(
+                    controller: textEditingController,
+                    focusNode: focusNode,
+                    hintText: 'Search multiple members to assign...',
+                    prefixIcon: Icons.search_rounded,
+                  );
+                },
             optionsViewBuilder: (context, onSelected, options) {
               return Align(
                 alignment: Alignment.topLeft,
@@ -177,7 +398,10 @@ class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
                     child: ListView.separated(
                       padding: const EdgeInsets.symmetric(vertical: 8),
                       itemCount: options.length,
-                      separatorBuilder: (context, index) => Divider(color: AppColors.border.withValues(alpha: 0.5), height: 1),
+                      separatorBuilder: (context, index) => Divider(
+                        color: AppColors.border.withValues(alpha: 0.5),
+                        height: 1,
+                      ),
                       itemBuilder: (context, index) {
                         final option = options.elementAt(index);
                         return ListTile(
@@ -211,16 +435,21 @@ class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
                 ),
                 backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                 side: BorderSide(
-                    color: AppColors.primary.withValues(alpha: 0.3)),
+                  color: AppColors.primary.withValues(alpha: 0.3),
+                ),
                 deleteIcon: const Icon(
-                    Icons.close_rounded, size: 16, color: AppColors.primary),
+                  Icons.close_rounded,
+                  size: 16,
+                  color: AppColors.primary,
+                ),
                 onDeleted: () {
                   setState(() {
                     _selectedCustomers.remove(name);
                   });
                 },
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               );
             }).toList(),
           ),
@@ -230,7 +459,23 @@ class _MultiCustomerSelectorState extends State<MultiCustomerSelector> {
   }
 }
 
-Widget _buildFoodList() {
+Widget _buildFoodList(List<DietLibraryModel>? diets) {
+  if (diets == null || diets.isEmpty) {
+    return const Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Text(
+        'No foods selected.',
+        style: TextStyle(color: AppColors.textLight),
+      ),
+    );
+  }
+
+  // Group by session
+  final Map<String, List<DietLibraryModel>> groupedDiets = {};
+  for (var diet in diets) {
+    groupedDiets.putIfAbsent(diet.session, () => []).add(diet);
+  }
+
   return Container(
     decoration: BoxDecoration(
       color: AppColors.surface,
@@ -246,26 +491,52 @@ Widget _buildFoodList() {
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _mealSessionSection('Morning', '07:30 AM', Icons.wb_sunny_rounded,
-            const Color(0xFFF59E0B), [
-              _FoodItemRow(name: 'Oats', qty: '50g', calories: '195 kcal'),
-              _FoodItemRow(
-                  name: 'Boiled Eggs', qty: '2 eggs', calories: '155 kcal'),
-            ]),
-        Container(height: 1, color: AppColors.border.withValues(alpha: 0.5)),
-        _mealSessionSection('Afternoon', '01:00 PM', Icons.lunch_dining_rounded,
-            const Color(0xFF10B981), [
-              _FoodItemRow(
-                  name: 'Grilled Chicken', qty: '150g', calories: '250 kcal'),
-            ]),
-      ],
+      children: groupedDiets.entries.map((entry) {
+        final session = entry.key;
+        final items = entry.value;
+
+        final icon =
+            session.toLowerCase().contains('morning') ||
+                session.toLowerCase().contains('breakfast')
+            ? Icons.wb_sunny_rounded
+            : session.toLowerCase().contains('dinner') ||
+                  session.toLowerCase().contains('evening')
+            ? Icons.nights_stay_rounded
+            : Icons.lunch_dining_rounded;
+
+        final color =
+            session.toLowerCase().contains('morning') ||
+                session.toLowerCase().contains('breakfast')
+            ? const Color(0xFFF59E0B)
+            : session.toLowerCase().contains('dinner') ||
+                  session.toLowerCase().contains('evening')
+            ? const Color(0xFF3B82F6)
+            : const Color(0xFF10B981);
+
+        return _mealSessionSection(
+          session,
+          'Anytime',
+          icon,
+          color,
+          items.map((item) {
+            return _FoodItemRow(
+              name: item.foodName,
+              qty: item.isQuantity ? '${item.quantity} qty' : '${item.grams}g',
+            );
+          }).toList(),
+        );
+      }).toList(),
     ),
   );
 }
 
-Widget _mealSessionSection(String session, String time, IconData icon,
-    Color color, List<Widget> items) {
+Widget _mealSessionSection(
+  String session,
+  String time,
+  IconData icon,
+  Color color,
+  List<Widget> items,
+) {
   return Padding(
     padding: const EdgeInsets.all(20),
     child: Column(
@@ -308,64 +579,11 @@ Widget _mealSessionSection(String session, String time, IconData icon,
   );
 }
 
-Widget _buildSummary() {
-  return Container(
-    padding: const EdgeInsets.all(24),
-    decoration: BoxDecoration(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(24),
-      border: Border.all(color: AppColors.border.withValues(alpha: 0.6)),
-      boxShadow: [
-        BoxShadow(
-          color: AppColors.black.withValues(alpha: 0.04),
-          blurRadius: 20,
-          offset: const Offset(0, 10),
-        ),
-      ],
-    ),
-    child: Column(
-      children: [
-        _SummaryRow(
-          label: 'Total Calories',
-          value: '600',
-          unit: 'kcal',
-          icon: Icons.local_fire_department_rounded,
-          color: AppColors.accent,
-          isTotal: true,
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 16),
-          child: Divider(),
-        ),
-        _SummaryRow(label: 'Protein',
-            value: '58',
-            unit: 'g',
-            icon: Icons.egg_alt_rounded,
-            color: AppColors.primary),
-        const SizedBox(height: 16),
-        _SummaryRow(label: 'Carbohydrates',
-            value: '34',
-            unit: 'g',
-            icon: Icons.grass_rounded,
-            color: AppColors.lightBlue),
-        const SizedBox(height: 16),
-        _SummaryRow(label: 'Fat',
-            value: '16',
-            unit: 'g',
-            icon: Icons.opacity_rounded,
-            color: const Color(0xFFF59E0B)),
-      ],
-    ),
-  );
-}
-
 class _FoodItemRow extends StatelessWidget {
   final String name;
   final String qty;
-  final String calories;
 
-  const _FoodItemRow(
-      {required this.name, required this.qty, required this.calories});
+  const _FoodItemRow({required this.name, required this.qty});
 
   @override
   Widget build(BuildContext context) {
@@ -409,93 +627,8 @@ class _FoodItemRow extends StatelessWidget {
               fontSize: 14,
             ),
           ),
-          const SizedBox(width: 16),
-          SizedBox(
-            width: 70,
-            child: Text(
-              calories,
-              textAlign: TextAlign.right,
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                color: AppColors.textLight,
-                fontSize: 13,
-              ),
-            ),
-          ),
         ],
       ),
-    );
-  }
-}
-
-class _SummaryRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final String unit;
-  final IconData icon;
-  final Color color;
-  final bool isTotal;
-
-  const _SummaryRow({
-    required this.label,
-    required this.value,
-    required this.unit,
-    required this.icon,
-    required this.color,
-    this.isTotal = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Row(
-          children: [
-            Container(
-              padding: EdgeInsets.all(isTotal ? 8 : 6),
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: color, size: isTotal ? 18 : 14),
-            ),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: TextStyle(
-                color: isTotal ? AppColors.textPrimary : AppColors.textLight,
-                fontWeight: isTotal ? FontWeight.w800 : FontWeight.w600,
-                fontSize: isTotal ? 16 : 14,
-              ),
-            ),
-          ],
-        ),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
-          children: [
-            Text(
-              value,
-              style: TextStyle(
-                fontWeight: FontWeight.w900,
-                color: AppColors.textPrimary,
-                fontSize: isTotal ? 22 : 16,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(width: 2),
-            Text(
-              unit,
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                color: AppColors.textLight,
-                fontSize: isTotal ? 14 : 12,
-              ),
-            ),
-          ],
-        ),
-      ],
     );
   }
 }

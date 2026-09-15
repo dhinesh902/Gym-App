@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:gym/routes/app_routes.dart';
 import 'package:gym/views/trainer/diet/tabs/food_library_tab.dart';
 import 'package:gym/views/trainer/diet/tabs/assigned_diets_tab.dart';
+import 'package:provider/provider.dart';
+import 'package:gym/providers/trainer_diet_provider.dart';
 
 class DietManagementScreen extends StatefulWidget {
   const DietManagementScreen({super.key});
@@ -154,45 +156,52 @@ class SummaryCardsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-      child: Row(
-        children: [
-          SummaryCard(
-            title: 'Total Foods',
-            count: '124',
-            icon: Icons.restaurant_menu_rounded,
-            color: AppColors.primary,
-            isPrimary: true,
+    return Consumer<TrainerDietProvider>(
+      builder: (context, provider, child) {
+        final counts = provider.counts;
+        final total = counts.values.fold(0, (sum, count) => sum + count);
+
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+          child: Row(
+            children: [
+              SummaryCard(
+                title: 'Total Foods',
+                count: total.toString(),
+                icon: Icons.restaurant_menu_rounded,
+                color: AppColors.primary,
+                isPrimary: true,
+              ),
+              SummaryCard(
+                title: 'Breakfast',
+                count: (counts['breakfast'] ?? 0).toString(),
+                icon: Icons.wb_sunny_rounded,
+                color: const Color(0xFFF59E0B),
+              ),
+              SummaryCard(
+                title: 'Lunch',
+                count: (counts['lunch'] ?? 0).toString(),
+                icon: Icons.lunch_dining_rounded,
+                color: const Color(0xFF10B981),
+              ),
+              SummaryCard(
+                title: 'Snack',
+                count: (counts['eveningsnack'] ?? 0).toString(),
+                icon: Icons.coffee_rounded,
+                color: const Color(0xFF6366F1),
+              ),
+              SummaryCard(
+                title: 'Dinner',
+                count: (counts['dinner'] ?? 0).toString(),
+                icon: Icons.nights_stay_rounded,
+                color: const Color(0xFF8B5CF6),
+              ),
+            ],
           ),
-          SummaryCard(
-            title: 'Morning',
-            count: '32',
-            icon: Icons.wb_sunny_rounded,
-            color: const Color(0xFFF59E0B),
-          ),
-          SummaryCard(
-            title: 'Afternoon',
-            count: '45',
-            icon: Icons.lunch_dining_rounded,
-            color: const Color(0xFF10B981),
-          ),
-          SummaryCard(
-            title: 'Evening',
-            count: '18',
-            icon: Icons.coffee_rounded,
-            color: const Color(0xFF6366F1),
-          ),
-          SummaryCard(
-            title: 'Night',
-            count: '29',
-            icon: Icons.nights_stay_rounded,
-            color: const Color(0xFF8B5CF6),
-          ),
-        ],
-      ),
+        );
+      }
     );
   }
 }
